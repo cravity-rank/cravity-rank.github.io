@@ -1,19 +1,19 @@
 # CRAVITY 本命曲排名：交接說明
 
-> 給 Claude Code 接手用。最後更新：2026-11-02
+> 給 Claude Code 接手用。最後更新：2026-11-02（已上線、ID 已寫死、改版為封面介面）
 
 ## 專案目標
 
-一個單頁網站，讓使用者用「二選一」比較 CRAVITY 的歌曲，排出完整名次，最後顯示前 10 名。每首歌都要能試聽，並發布在 GitHub Pages。
+一個單頁網站，讓使用者用「二選一」比較 CRAVITY 的歌曲，排出完整名次，最後以專輯封面九宮格顯示前 9 名。每首歌都要能試聽，並發布在 GitHub Pages。
 
 ## 目前狀態
 
 | 項目 | 狀態 |
 |---|---|
 | 二選一排序遊戲（105 首） | ✅ 完成，邏輯已用模擬測試過 |
-| 顯示前 10 名，11–105 名可展開 | ✅ 完成 |
-| 每首歌 30 秒試聽＋Apple Music 連結 | ⚠️ 已寫好，**尚未在真實網站上測試**（開發環境連不到 Apple） |
-| 推送到 GitHub、開啟 Pages | ❌ 未完成：repo 還不存在 |
+| 結果：前 9 名封面九宮格，10–105 名可展開 | ✅ 完成 |
+| 每首歌 30 秒試聽＋Apple Music 連結 | ✅ 105 首 ID 已寫死並在線上實測 |
+| GitHub repo＋Pages | ✅ （網址見 repo 設定） |
 
 ## 檔案
 
@@ -24,35 +24,17 @@ README.md    repo 說明
 HANDOFF.md   本文件
 ```
 
-## 待辦（依序）
-
-1. **建立 repo 並推送**
-   ```bash
-   gh repo create <owner>/cravity-ranking --public --source=. --push
-   ```
-   （或在 github.com/new 手動建立後 `git remote add origin … && git push -u origin main`）
-2. **開啟 GitHub Pages**（main 分支、根目錄）
-   ```bash
-   gh api repos/<owner>/cravity-ranking/pages -X POST \
-     -f "source[branch]=main" -f "source[path]=/"
-   ```
-   網址：`（網址見 repo 設定）`
-3. **實測試聽配對**：打開網站，在瀏覽器 console 執行
-   ```js
-   SONGS.filter(s => !MAP[s.id]).map(s => s.t)
-   ```
-   列出沒配到 Apple Music 的歌，再看下方「配對規則」調整，或把確定的曲目 ID 直接寫進 `SONGS`（`alb` + `i` 欄位）。
-4. **（建議）把配對結果固定下來**：用 iTunes API 跑一次，把所有歌的 `trackId`／`collectionId` 寫死進 `SONGS`，網站就不必每次即時查詢，也比較穩。
-   ```bash
-   curl "https://itunes.apple.com/lookup?id=1507226584&entity=song&limit=200&country=tw"
-   ```
+## 更新 Apple Music 資料
+iTunes 查詢 API 可直接用 curl 取得：
+```bash
+curl "https://itunes.apple.com/lookup?id=<專輯ID>&entity=song&country=tw"
+```
+每首歌一律連到 `a` 欄位所寫的**原版專輯**（不用單曲或改版專輯）。新增歌曲時補上 `alb`、`i`、`art`、`pv` 四個欄位。
 
 ## 程式架構（index.html 內的 `<script>`）
 
 ### 歌曲資料 `SONGS`
-每筆：`{ t: 歌名, a: 專輯, y: 年份, alb?: Apple 專輯 ID, i?: Apple 曲目 ID }`，載入後自動加上 `id`（陣列索引）。
-- 26 首已有手動確認過的 `alb`/`i`（來自 Apple Music 網頁）。
-- 其餘 79 首靠執行期查詢。
+每筆：`{ t: 歌名, a: 專輯, y: 年份, alb: Apple 專輯 ID, i: Apple 曲目 ID, art: 封面網址（{s} 換尺寸）, pv: 試聽網址 }`，載入後自動加上 `id`（陣列索引）。全部 105 首都已寫死，不再即時配對。
 
 ### 排序：互動式合併排序（bottom-up）
 - 狀態 `S = { queue, L, R, M, done, hist, final }`
@@ -66,24 +48,14 @@ HANDOFF.md   本文件
 - 進度存在 `localStorage`，key：`cravity-rank-all-v1`。**改動 `SONGS` 內容或順序時要換 key**，否則舊進度的 id 會對錯歌。
 
 ### Apple Music 試聽
-- `resolveAll()`：頁面載入後執行
-  1. 先讀 `localStorage` 快取（key `cravity-am-map-v1`，7 天有效）
-  2. 用 JSONP 呼叫 `itunes.apple.com/lookup?id=1507226584&entity=song&limit=200&country=tw`
-  3. `assign()` 依歌名配對，寫入 `MAP[id] = { url, preview }`
-  4. 沒配到的歌用 `searchOne()` 逐首搜尋 `itunes.apple.com/search`
-- **配對規則**
-  - `norm()`：轉小寫、NFKC、去掉括號內容和符號
-  - `keys()`：一首歌產生多個比對鍵，例如 `낯섦 (Stay)` → `낯섦`、`stay`
-  - `BAD` 正規式排除伴奏、日文版、remix 等版本
-  - 同名多筆時取最早發行的（＝原曲）
-  - 有手動 `i` 的歌優先用曲目 ID 對
-- 找不到時退回：手動 ID 連結 → Apple Music 搜尋連結。
-- 播放：單一 `Audio` 物件，同時只播一首；選歌、上一步、重來時會停止。
+- 直接用 `pv` 播放；播放失敗時（試聽網址失效）用 JSONP 呼叫 `itunes.apple.com/lookup?id=<i>` 重取一次。
+- 單一 `Audio` 物件，同時只播一首；選歌、上一步、重來時會停止。`sync()` 依 `data-play` 屬性切換播放狀態。
 
 ### 其他
 - 鍵盤 ← → 可選歌。
 - 支援淺色／深色主題（CSS 變數，`prefers-color-scheme` 與 `data-theme`）。
-- 手機寬度 720px 以下卡片改成上下排列。
+- 對決時兩首歌永遠橫向並排（封面在上，資訊與試聽在下）；點封面也能選。
+- 視覺：米白紙感底、Noto Serif TC＋Cormorant Garamond＋IBM Plex Mono。
 
 ## 收錄範圍（105 首）
 
