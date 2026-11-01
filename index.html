@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="CRAVITY 全曲二選一排名遊戲，選出你的前 10 名">
+<title>CRAVITY 本命曲對決</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one stage, two "orbits" facing off across a gravity line; bracket rail below */
+:root{
+  --bg:#eef0f7; --surface:#ffffff; --ink:#141a3a; --muted:#5d6385;
+  --line:#d6d9ea; --accent:#2f4bff; --accent-ink:#ffffff; --glow:rgba(47,75,255,.14); --gold:#b8871f;
+  --f-display:"Syne","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --ink:#e9ebfa; --muted:#9aa0c4;
+  --line:#2a3055; --accent:#7d8fff; --accent-ink:#0d1022; --glow:rgba(125,143,255,.18); --gold:#e2b24d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --ink:#e9ebfa; --muted:#9aa0c4;
+  --line:#2a3055; --accent:#7d8fff; --accent-ink:#0d1022; --glow:rgba(125,143,255,.18); --gold:#e2b24d; color-scheme:dark}
+
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,5vw,40px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.status{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{background:var(--accent);color:var(--accent-ink);padding:3px 10px;border-radius:999px;font-weight:500}
+
+.meter{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);width:0;transition:width .35s ease}
+
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.vs{display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--muted);position:relative}
+.vs::before{content:"";position:absolute;top:8%;bottom:8%;left:50%;width:1px;background:var(--line)}
+.vs b{position:relative;background:var(--bg);padding:6px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s}
+.card::after{content:"";position:absolute;width:220px;height:220px;right:-90px;top:-90px;border-radius:50%;border:1px solid var(--line);box-shadow:0 0 0 26px var(--glow);pointer-events:none;opacity:.7}
+.card:hover{border-color:var(--accent)}
+.card.picked{transform:scale(1.015);border-color:var(--accent);box-shadow:0 10px 40px var(--glow)}
+.card.lost{opacity:.4}
+.side{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.title{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4.4vw,38px);line-height:1.08;margin:0;overflow-wrap:anywhere;text-wrap:balance;position:relative}
+.meta{color:var(--muted);font-size:13.5px;margin:0;position:relative}
+.meta .yr{font-family:var(--f-mono);color:var(--ink)}
+.media{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:relative}
+.prev{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;font-weight:500;color:var(--accent);background:var(--glow);border:1px solid var(--accent);border-radius:999px;padding:8px 16px 8px 12px;cursor:pointer}
+.prev .ic{display:inline-flex}
+.prev svg{width:16px;height:16px;fill:currentColor}
+.prev i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--accent)}
+.prev.on{background:var(--accent);color:var(--accent-ink)}
+.prev.on i{background:var(--accent-ink)}
+.prev.wait{border-style:dashed;color:var(--muted);border-color:var(--line);background:transparent;cursor:default;padding-left:16px}
+.prev:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.media.mini{margin-left:auto;flex-wrap:nowrap}
+.media.mini .prev{padding:5px 10px}
+.media.mini .prev span:not(.ic){display:none}
+.media.mini .prev.wait{display:none}
+.media.mini .am{padding:5px 10px;font-size:0;gap:0}
+.media.mini .am svg{width:14px;height:14px}
+.ranks li{align-items:center}
+.rest a{color:var(--ink);text-decoration-color:var(--line)}
+.am{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;align-self:flex-start;background:var(--bg)}
+.am:hover{border-color:var(--accent);color:var(--accent)}
+.am svg{width:14px;height:14px;fill:currentColor}
+.pick{margin-top:auto;font:inherit;font-weight:700;font-size:16px;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:filter .15s}
+.pick:hover{filter:brightness(1.08)}
+.pick:focus-visible,.am:focus-visible,.ghost:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.pick kbd{font-family:var(--f-mono);font-size:11px;opacity:.75;margin-left:6px;font-weight:500}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.ghost{font:inherit;font-size:13.5px;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.ghost:disabled{opacity:.4;cursor:default}
+.note{font-size:12.5px;color:var(--muted);margin:0;max-width:62ch}
+
+.rail{display:flex;flex-direction:column;gap:10px}
+.rail h2,.result h2{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.chip.out{text-decoration:line-through;color:var(--muted);background:transparent}
+.chip.now{border-color:var(--accent);color:var(--accent)}
+.chip .k{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:5px}
+.ranks li.top3 .n{color:var(--gold)}
+.ranks li.top3{border-color:var(--gold)}
+.rest{font-size:13.5px;color:var(--muted)}
+.rest summary{cursor:pointer;color:var(--ink);font-weight:500}
+.rest ol{columns:2 240px;column-gap:24px;margin:10px 0 0;padding-left:2.6em}
+.rest li{break-inside:avoid;padding:2px 0}
+.rest .yr{font-size:12px}
+.save{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+
+.result{display:flex;flex-direction:column;gap:20px}
+.crown{background:var(--surface);border:1px solid var(--gold);border-radius:20px;padding:28px 22px;display:grid;grid-template-columns:1fr;gap:12px;position:relative;overflow:hidden}
+.crown::after{content:"";position:absolute;width:340px;height:340px;right:-140px;top:-160px;border-radius:50%;border:1px solid var(--gold);box-shadow:0 0 0 40px var(--glow),0 0 0 80px var(--glow);opacity:.45;pointer-events:none}
+.crown .label{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
+.crown .title{font-size:clamp(34px,7vw,60px)}
+.ranks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.ranks li{display:flex;gap:12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0}
+.ranks .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:3.2em;font-variant-numeric:tabular-nums}
+.ranks .t{font-weight:700;overflow-wrap:anywhere}
+
+@media (max-width:720px){
+  .duel{grid-template-columns:1fr;gap:10px}
+  .vs{height:28px}
+  .vs::before{top:50%;bottom:auto;left:8%;right:8%;width:auto;height:1px}
+  .vs b{padding:0 10px}
+  .card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">CRAVITY 全曲 <span id="count"></span> 首 · 排序對決 · 選出前 10 名</span>
+      <h1>本命曲<span>對決</span></h1>
+    </div>
+    <div class="status" id="status"></div>
+  </header>
+  <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+
+  <main id="stage"></main>
+
+  <div class="tools" id="tools">
+    <p class="note" id="note"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="ghost" id="undo" type="button">上一步</button>
+      <button class="ghost" id="restart" type="button">重新洗牌</button>
+    </div>
+  </div>
+
+  <section class="rail" id="rail">
+    <h2 id="railTitle">這一組目前的順序</h2>
+    <div class="chips" id="chips"></div>
+    <p class="note">每首歌都會被拿來和其他歌比較好幾次，不會因為一次輸掉就出局。你的每個選擇都會用來排出完整名次。進度會自動存在這個瀏覽器，可以分好幾次玩完。收錄 CRAVITY 全員演唱的所有韓文、日文原創曲；同一首歌的日文版、伴奏版，以及個人或跨團合作曲不重複收錄。</p>
+  </section>
+</div>
+
+<script>
+const SF = "tw"; // Apple Music 店面
+const SONGS = [{"t": "Top of the Chain","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "Break all the Rules","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020,"alb": "1507139916","i": "1507139919"},{"t": "JUMPER","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "Blackout","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "낯섦 (Stay)","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "Cloud 9","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "별 (Star)","a": "HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y": 2020},{"t": "Flame","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "Believer","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "Ohh Ahh","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "Realize","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "열기구 (HOT AIR BALLOON)","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "Sunrise","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020},{"t": "호흡 (Breathing)","a": "HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y": 2020,"alb": "1528295587","i": "1528295594"},{"t": "My Turn","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021,"alb": "1549181184","i": "1549181185"},{"t": "Call my name","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Mammoth","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Bad Habits","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Moonlight","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Dangerous","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Give me your love","a": "HIDEOUT : BE OUR VOICE - SEASON3.","y": 2021},{"t": "Intro : New Horizon","a": "The Awakening : Written In the Stars","y": 2021},{"t": "Gas Pedal","a": "The Awakening : Written In the Stars","y": 2021},{"t": "VENI VIDI VICI","a": "The Awakening : Written In the Stars","y": 2021},{"t": "CHINGA-LINGA","a": "The Awakening : Written In the Stars","y": 2021},{"t": "Celebrate","a": "The Awakening : Written In the Stars","y": 2021},{"t": "Grand Prix","a": "The Awakening : Written In the Stars","y": 2021},{"t": "Divin'","a": "The Awakening : Written In the Stars","y": 2021},{"t": "GO GO","a": "The Awakening : Written In the Stars","y": 2021,"alb": "1581071163","i": "1581071321"},{"t": "Adrenaline","a": "LIBERTY : IN OUR COSMOS","y": 2022,"alb": "1614620124","i": "1614620131"},{"t": "POW!","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "BOPPIN'","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "Chandelier","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "FLIP THE FRAME","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "좋아하나봐 (Maybe Baby)","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "Late Night","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "Outro : In Our Cosmos","a": "LIBERTY : IN OUR COSMOS","y": 2022},{"t": "VIVID","a": "VIVID（單曲）","y": 2022},{"t": "Boogie Woogie","a": "NEW WAVE","y": 2022},{"t": "PARTY ROCK","a": "NEW WAVE","y": 2022,"alb": "1645380005","i": "1645380009"},{"t": "New Addiction","a": "NEW WAVE","y": 2022},{"t": "AUTOMATIC","a": "NEW WAVE","y": 2022},{"t": "Colorful","a": "NEW WAVE","y": 2022},{"t": "Knock Knock","a": "NEW WAVE","y": 2022},{"t": "Groovy","a": "MASTER : PIECE","y": 2023,"alb": "1672974648","i": "1672974653"},{"t": "FLY","a": "MASTER : PIECE","y": 2023},{"t": "Get Lifted","a": "MASTER : PIECE","y": 2023},{"t": "Baddie","a": "MASTER : PIECE","y": 2023},{"t": "A to Z","a": "MASTER : PIECE","y": 2023},{"t": "Light the way","a": "MASTER : PIECE","y": 2023},{"t": "I Can't Fight The Feeling","a": "Groovy -Japanese ver.-（日本單曲）","y": 2023},{"t": "Ready Set Go","a": "驅魔麵館 2 OST","y": 2023},{"t": "Cheese","a": "SUN SEEKER","y": 2023,"alb": "1703698456","i": "1703698461"},{"t": "Ready or Not","a": "SUN SEEKER","y": 2023},{"t": "MEGAPHONE","a": "SUN SEEKER","y": 2023},{"t": "Vibration","a": "SUN SEEKER","y": 2023},{"t": "9 o'clock","a": "SUN SEEKER","y": 2023},{"t": "LOVE FIRE","a": "SUN SEEKER","y": 2023},{"t": "Dilly Dally","a": "Dilly Dally（日本 EP）","y": 2023},{"t": "Christmastide","a": "Dilly Dally（日本 EP）","y": 2023},{"t": "C'est La Vie","a": "EVERSHINE","y": 2024},{"t": "Love or Die","a": "EVERSHINE","y": 2024,"alb": "1730850381","i": "1730850392"},{"t": "Cherry Blossom","a": "EVERSHINE","y": 2024},{"t": "Mr.","a": "EVERSHINE","y": 2024},{"t": "Worst Thriller","a": "EVERSHINE","y": 2024},{"t": "Over & Over","a": "EVERSHINE","y": 2024,"alb": "1730850381","i": "1730850569"},{"t": "SHOW OFF","a": "SHOW OFF（日本單曲）","y": 2024},{"t": "Blue & White","a": "SHOW OFF（日本單曲）","y": 2024,"alb": "1746880964","i": "1746881061"},{"t": "Now or Never","a": "FIND THE ORBIT","y": 2024},{"t": "Secret","a": "FIND THE ORBIT","y": 2024},{"t": "Horizon","a": "FIND THE ORBIT","y": 2024,"alb": "1780370472","i": "1780370783"},{"t": "Jelly Bean","a": "Jelly Bean（日本 EP）","y": 2025},{"t": "SCORCH","a": "Jelly Bean（日本 EP）","y": 2025},{"t": "ENIGMA","a": "Jelly Bean（日本 EP）","y": 2025},{"t": "On My Way","a": "Dare to Crave","y": 2025},{"t": "SWISH","a": "Dare to Crave","y": 2025},{"t": "SET NET G0?!","a": "Dare to Crave","y": 2025,"alb": "1819754827","i": "1819754985"},{"t": "Rendez-vous","a": "Dare to Crave","y": 2025},{"t": "PARANOIA","a": "Dare to Crave","y": 2025},{"t": "Straight Up To Heaven","a": "Dare to Crave","y": 2025},{"t": "Stadium","a": "Dare to Crave","y": 2025},{"t": "Marionette","a": "Dare to Crave","y": 2025},{"t": "Underdog","a": "Dare to Crave","y": 2025},{"t": "Click, Flash, Pow","a": "Dare to Crave","y": 2025},{"t": "Love Me Again","a": "Dare to Crave","y": 2025},{"t": "Wish Upon A Star","a": "Dare to Crave","y": 2025},{"t": "Lemonade Fever","a": "Dare to Crave : Epilogue","y": 2025,"alb": "1848076087","i": "1848076546"},{"t": "OXYGEN","a": "Dare to Crave : Epilogue","y": 2025},{"t": "Everyday","a": "Dare to Crave : Epilogue","y": 2025},{"t": "BLAST OUT","a": "BLAST OUT（日本單曲）","y": 2026},{"t": "恋じゃない? -Don't you love me?-","a": "BLAST OUT（日本單曲）","y": 2026},{"t": "Paradox","a": "BLAST OUT（日本單曲）","y": 2026},{"t": "Hello-Goodbye","a": "ReDeFINE","y": 2026},{"t": "AWAKE","a": "ReDeFINE","y": 2026,"alb": "1891555826","i": "1891555988"},{"t": "FEVER","a": "ReDeFINE","y": 2026,"alb": "1891555826","i": "1891555994"},{"t": "Adore","a": "ReDeFINE","y": 2026,"alb": "1891555826","i": "1891555999"},{"t": "Love Me Like You Do","a": "ReDeFINE","y": 2026,"alb": "1891555826","i": "1891556004"},{"t": "봄날의 우리 (Spring, with You)","a": "ReDeFINE","y": 2026,"alb": "1891555826","i": "1891556008"},{"t": "Pulse","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885030"},{"t": "LOUDER","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885037"},{"t": "Lucky Charm","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885257"},{"t": "LOVE ME","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885261"},{"t": "Seize The Night","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885271"},{"t": "Fantasy","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885496"},{"t": "Odd One Out","a": "sonorous","y": 2026,"alb": "6811885027","i": "6811885503"}].map((s,k)=>({...s,id:k}));
+// ---- Apple Music 連結與 30 秒試聽 ----
+// 網頁載入時向 Apple 的 iTunes 查詢服務取得 CRAVITY 全部曲目，替每首歌找到歌曲頁和試聽音檔。
+// 找不到時退回：已確認的曲目連結 → Apple Music 搜尋。
+const ARTIST_ID = "1507226584";
+const MAP = {};            // 歌曲 id -> {url, preview}
+let lookupState = "idle";  // idle | loading | done | failed
+const MAP_KEY = "cravity-am-map-v1";
+
+const norm = t => String(t).toLowerCase().normalize("NFKC").replace(/\(.*?\)|\[.*?\]/g," ").replace(/[^\p{L}\p{N}]+/gu,"");
+function keys(t){
+  const ks=[norm(t)];
+  const m=t.match(/^(.*?)\s*\(([^)]+)\)\s*$/); if(m) ks.push(norm(m[1]),norm(m[2]));
+  const n=t.replace(/\s*-.*-\s*$/,""); if(n!==t) ks.push(norm(n));
+  return [...new Set(ks.filter(Boolean))];
+}
+const BAD = /instrumental|inst\.|\(inst|japanese|jpn ver|korean ver|english ver|sped up|slowed|remix|acoustic|live/i;
+function goodTrack(r){ return r && r.wrapperType==="track" && /cravity/i.test(r.artistName||"") && !BAD.test(r.trackName||""); }
+
+function jsonp(url){
+  return new Promise((res,rej)=>{
+    const cb="am_"+Math.random().toString(36).slice(2);
+    const sc=document.createElement("script");
+    const to=setTimeout(()=>{done();rej(new Error("timeout"))},12000);
+    function done(){clearTimeout(to);try{delete window[cb]}catch(e){window[cb]=undefined}sc.remove()}
+    window[cb]=d=>{done();res(d)};
+    sc.onerror=()=>{done();rej(new Error("blocked"))};
+    sc.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    document.head.appendChild(sc);
+  });
+}
+function assign(results){
+  const pool=results.filter(goodTrack).sort((a,b)=>String(a.releaseDate).localeCompare(String(b.releaseDate)));
+  const byKey={};
+  for(const r of pool){ for(const k of keys(r.trackName)) if(!byKey[k]) byKey[k]=r; }
+  let n=0;
+  for(const s of SONGS){
+    if(MAP[s.id]) continue;
+    let hit=null;
+    if(s.i) hit=pool.find(r=>String(r.trackId)===s.i);
+    if(!hit) for(const k of keys(s.t)){ if(byKey[k]){hit=byKey[k];break} }
+    if(hit){ MAP[s.id]={url:hit.trackViewUrl, preview:hit.previewUrl}; n++; }
+  }
+  return n;
+}
+async function searchOne(s){
+  for(const term of keys(s.t).length>1?[s.t.replace(/\(.*?\)/g,""), s.t.match(/\(([^)]+)\)/)?.[1]||s.t]:[s.t]){
+    try{
+      const d=await jsonp(`https://itunes.apple.com/search?term=${encodeURIComponent("CRAVITY "+term.trim())}&entity=song&country=${SF}&limit=15`);
+      const want=keys(s.t);
+      const hit=(d.results||[]).filter(goodTrack).find(r=>keys(r.trackName).some(k=>want.includes(k)));
+      if(hit){ MAP[s.id]={url:hit.trackViewUrl, preview:hit.previewUrl}; return true; }
+    }catch(e){ return false; }
+  }
+  return false;
+}
+async function resolveAll(){
+  try{ const c=JSON.parse(localStorage.getItem(MAP_KEY)); if(c&&c.v&&Date.now()-c.at<7*864e5) Object.assign(MAP,c.v); }catch(e){}
+  if(Object.keys(MAP).length>=SONGS.length){ lookupState="done"; refreshMedia(); return; }
+  lookupState="loading"; refreshMedia();
+  try{
+    const d=await jsonp(`https://itunes.apple.com/lookup?id=${ARTIST_ID}&entity=song&limit=200&country=${SF}`);
+    assign(d.results||[]);
+    lookupState="done";
+  }catch(e){ lookupState="failed"; refreshMedia(); return; }
+  refreshMedia();
+  // 主清單沒對到的歌，逐首搜尋
+  for(const s of SONGS){ if(!MAP[s.id]){ await searchOne(s); } }
+  try{ localStorage.setItem(MAP_KEY, JSON.stringify({at:Date.now(), v:MAP})); }catch(e){}
+  refreshMedia();
+}
+
+const searchTitle = t => t.replace(/^[^(]*\(([^)]+)\)$/, "$1");
+const amLink = s => MAP[s.id]?.url
+  || (s.i ? `https://music.apple.com/${SF}/album/${s.alb}?i=${s.i}`
+  : `https://music.apple.com/${SF}/search?term=${encodeURIComponent("CRAVITY " + searchTitle(s.t))}`);
+
+// 單一播放器：同一時間只播一首
+const audio = new Audio(); audio.preload="none";
+let playingId = null;
+audio.addEventListener("timeupdate",()=>{ document.querySelectorAll(`.prev[data-song="${playingId}"] i`).forEach(b=>b.style.width=(audio.currentTime/(audio.duration||30)*100)+"%"); });
+audio.addEventListener("ended",()=>{ playingId=null; refreshMedia(); });
+function stopAudio(){ audio.pause(); playingId=null; }
+function toggle(id){
+  const m=MAP[id]; if(!m||!m.preview) return;
+  if(playingId===id){ stopAudio(); refreshMedia(); return; }
+  audio.src=m.preview; audio.currentTime=0;
+  audio.play().then(()=>{playingId=id;refreshMedia()}).catch(()=>{playingId=null;refreshMedia()});
+}
+const PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+function mediaHTML(s){
+  const m=MAP[s.id];
+  const link=`<a class="am" href="${amLink(s)}" target="_blank" rel="noopener">${AM_ICON}${m||s.i?"在 Apple Music 開啟":"在 Apple Music 搜尋"}</a>`;
+  let prev;
+  if(m&&m.preview){
+    const on=playingId===s.id;
+    prev=`<button class="prev${on?" on":""}" type="button" data-song="${s.id}" aria-pressed="${on}"><span class="ic">${on?PAUSE:PLAY}</span><span>${on?"暫停":"試聽 30 秒"}</span><i></i></button>`;
+  }else if(lookupState==="loading"||(lookupState==="done"&&!m)){
+    prev=`<span class="prev wait">正在找試聽音檔…</span>`;
+  }else prev="";
+  return prev+link;
+}
+function refreshMedia(){ document.querySelectorAll(".media[data-song]").forEach(el=>{ el.innerHTML=mediaHTML(SONGS[+el.dataset.song]); }); }
+
+// 排序方式：互動式合併排序。先把每首歌各自成一組，再兩兩合併；
+// 每次合併時，兩組最前面的歌對決，贏的排進新順序，輸的留著繼續和下一首比。
+// 所以每首歌都會比很多次，最後得到完整排名。
+const KEY = "cravity-rank-all-v1";
+const TOP = 10;
+let S;
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function advance(s){
+  if(s.L.length||s.R.length) return;
+  if(s.queue.length===1){ s.final=s.queue[0]; return; }
+  s.L=s.queue.shift(); s.R=s.queue.shift(); s.M=[];
+}
+function fresh(){const s={queue:shuffle(SONGS.map(x=>x.id)).map(id=>[id]),L:[],R:[],M:[],done:0,hist:[],final:null};advance(s);return s}
+// 剩下最多還要比幾場（每次合併 a、b 兩組最多 a+b−1 場）
+function remainingMax(s){
+  if(s.final) return 0;
+  let cost=s.L.length+s.R.length-1;
+  const q=s.queue.map(r=>r.length).concat(s.M.length+s.L.length+s.R.length);
+  while(q.length>1){const a=q.shift(),b=q.shift();cost+=a+b-1;q.push(a+b)}
+  return cost;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&Array.isArray(v.queue))return v}catch(e){}return null}
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const AM_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v12.3A3.5 3.5 0 1 0 11 18.5V8h8v5.3A3.5 3.5 0 1 0 21 16.5V3z"/></svg>';
+
+function card(s, side){
+  return `<article class="card" data-side="${side}">
+    <span class="side">${side==="L"?"左":"右"}側</span>
+    <h3 class="title">${esc(s.t)}</h3>
+    <p class="meta"><span class="yr">${s.y}</span> · ${esc(s.a)}</p>
+    <div class="media" data-song="${s.id}">${mediaHTML(s)}</div>
+    <button class="pick" type="button" data-pick="${side}">選這首<kbd>${side==="L"?"←":"→"}</kbd></button>
+  </article>`;
+}
+
+function render(){
+  const stage=$("stage");
+  $("undo").disabled=!S.hist.length;
+  const rem=remainingMax(S);
+  $("meter").style.width=(S.final?100:S.done/(S.done+rem)*100)+"%";
+  $("note").textContent = "按「試聽 30 秒」直接在頁面播放片段，或到 Apple Music 聽完整版。鍵盤 ← → 也能選。";
+
+  if(S.final){ renderResult(); return; }
+  $("tools").hidden=false; $("rail").hidden=false;
+
+  const groupSize=S.M.length+S.L.length+S.R.length;
+  $("status").innerHTML=`<span class="pill">第 ${S.done+1} 場</span><span>剩下最多 ${rem} 場</span>`;
+
+  const A=SONGS[S.L[0]], B=SONGS[S.R[0]];
+  stage.innerHTML=`<div class="duel">${card(A,"L")}<div class="vs"><b>VS</b></div>${card(B,"R")}</div>`;
+
+  $("railTitle").textContent=`正在排序的 ${groupSize} 首`;
+  const chip=(id,cls,k)=>`<span class="chip ${cls}">${k?`<span class="k">${k}</span>`:""}${esc(SONGS[id].t)}</span>`;
+  $("chips").innerHTML =
+    S.M.map((id,k)=>chip(id,"",k+1)).join("") +
+    [S.L[0],S.R[0]].map(id=>chip(id,"now","")).join("") +
+    S.L.slice(1).concat(S.R.slice(1)).map(id=>chip(id,"out","")).join("");
+}
+
+function renderResult(){
+  $("tools").hidden=false; $("rail").hidden=true;
+  $("status").innerHTML=`<span class="pill">完成</span><span>共比了 ${S.done} 場</span>`;
+  const c=SONGS[S.final[0]];
+  const top=S.final.slice(1,TOP), rest=S.final.slice(TOP);
+  $("stage").innerHTML=`<section class="result">
+    <div class="crown">
+      <span class="label">第 1 名 · 你的 CRAVITY 本命曲</span>
+      <h3 class="title">${esc(c.t)}</h3>
+      <p class="meta"><span class="yr">${c.y}</span> · ${esc(c.a)}</p>
+      <div class="media" data-song="${c.id}">${mediaHTML(c)}</div>
+    </div>
+    <h2>第 2 – ${TOP} 名</h2>
+    <ol class="ranks">${top.map((id,k)=>`<li class="${k<2?"top3":""}"><span class="n">#${k+2}</span><span class="t">${esc(SONGS[id].t)}</span><div class="media mini" data-song="${id}">${mediaHTML(SONGS[id])}</div></li>`).join("")}</ol>
+    ${rest.length?`<details class="rest"><summary>查看第 ${TOP+1}–${S.final.length} 名</summary><ol start="${TOP+1}">${rest.map(id=>`<li><a href="${amLink(SONGS[id])}" target="_blank" rel="noopener">${esc(SONGS[id].t)}</a> <span class="yr">· ${esc(SONGS[id].a)}</span></li>`).join("")}</ol></details>`:""}
+  </section>`;
+}
+
+function pick(side){
+  if(S.final) return;
+  stopAudio();
+  if(S.hist.length>=40) S.hist.shift();
+  S.hist.push(JSON.stringify({queue:S.queue,L:S.L,R:S.R,M:S.M,done:S.done,final:S.final}));
+  S.L=S.L.slice(); S.R=S.R.slice(); S.M=S.M.slice(); S.queue=S.queue.slice();
+  S.M.push(side==="L"?S.L.shift():S.R.shift());
+  S.done++;
+  if(!S.L.length||!S.R.length){
+    S.queue.push(S.M.concat(S.L,S.R));
+    S.L=[];S.R=[];S.M=[];
+    advance(S);
+  }
+  const el=document.querySelector(`.card[data-side="${side}"]`);
+  const other=document.querySelector(`.card:not([data-side="${side}"])`);
+  if(el){el.classList.add("picked"); other&&other.classList.add("lost");
+    setTimeout(()=>{save();render();window.scrollTo({top:0,behavior:"smooth"})},matchMedia("(prefers-reduced-motion:reduce)").matches?0:260);
+  } else {save();render()}
+}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-pick]"); if(b) pick(b.dataset.pick);
+  const pv=e.target.closest("button.prev[data-song]"); if(pv) toggle(+pv.dataset.song);
+});
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("input,textarea")) return;
+  if(e.key==="ArrowLeft") pick("L");
+  if(e.key==="ArrowRight") pick("R");
+});
+$("undo").onclick=()=>{ stopAudio(); if(!S.hist.length) return; const p=JSON.parse(S.hist.pop()); Object.assign(S,p); save(); render(); };
+$("restart").onclick=()=>{ stopAudio(); S=fresh(); save(); render(); };
+
+$("count").textContent=SONGS.length;
+S=load()||fresh();
+render();
+resolveAll();
+</script>
+</body>
+</html>
