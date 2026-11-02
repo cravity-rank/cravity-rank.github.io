@@ -13,7 +13,7 @@
 | 二選一排序遊戲（105 首） | ✅ 完成，邏輯已用模擬測試過 |
 | 前 30 名（淘汰賽＋評分加賽）、範圍篩選、4:3 結果圖 | ✅ 完成 |
 | 每首歌 30 秒試聽＋Apple Music 連結 | ✅ 105 首 ID 已寫死並在線上實測 |
-| GitHub repo＋Pages | ✅ 已上線 |
+| GitHub repo＋Pages | ✅ https://cravity-rank.github.io/ |
 
 ## 檔案
 
