@@ -13,12 +13,13 @@
 | 二選一排序遊戲（105 首） | ✅ 完成，邏輯已用模擬測試過 |
 | 前 30 名（淘汰賽＋評分加賽）、範圍篩選、4:3 結果圖 | ✅ 完成 |
 | 每首歌 30 秒試聽＋Apple Music 連結 | ✅ 105 首 ID 已寫死並在線上實測 |
-| GitHub repo＋Pages | ✅ （網址見 repo 設定） |
+| GitHub repo＋Pages | ✅ 已上線 |
 
 ## 檔案
 
 ```
-index.html   整個網站（HTML + CSS + JS 同一檔；外部只有 Google Fonts 與 Apple 封面／試聽）
+index.html   頁面與樣式（含內容安全政策 CSP）
+app.js       程式與歌曲資料（外部只連 Google Fonts 與 Apple 封面／試聽／查詢）
 img/*.webp   藍色貼紙裝飾（來源：IG貼文素材，已裁邊壓縮）
 README.md    repo 說明
 .nojekyll    讓 GitHub Pages 直接提供檔案
