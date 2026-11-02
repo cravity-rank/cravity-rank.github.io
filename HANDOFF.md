@@ -1,24 +1,25 @@
 # CRAVITY 本命曲排名：交接說明
 
-> 給 Claude Code 接手用。最後更新：2026-11-02（已上線、ID 已寫死、改版為封面介面）
+> 給 Claude Code 接手用。最後更新：2026-11-02（前 30 名淘汰賽、範圍篩選、4:3 結果圖）
 
 ## 專案目標
 
-一個單頁網站，讓使用者用「二選一」比較 CRAVITY 的歌曲，排出完整名次，最後以專輯封面九宮格顯示前 9 名。每首歌都要能試聽，並發布在 GitHub Pages。
+一個單頁網站，讓使用者用「二選一」比較 CRAVITY 的歌曲，可先選專輯與主打／收錄曲範圍，只排出前 30 名，可輸出 4:3 結果圖。每首歌都要能試聽，並發布在 GitHub Pages。
 
 ## 目前狀態
 
 | 項目 | 狀態 |
 |---|---|
 | 二選一排序遊戲（105 首） | ✅ 完成，邏輯已用模擬測試過 |
-| 結果：前 9 名封面九宮格，10–105 名可展開 | ✅ 完成 |
+| 前 30 名淘汰賽、範圍篩選、4:3 結果圖 | ✅ 完成 |
 | 每首歌 30 秒試聽＋Apple Music 連結 | ✅ 105 首 ID 已寫死並在線上實測 |
 | GitHub repo＋Pages | ✅ （網址見 repo 設定） |
 
 ## 檔案
 
 ```
-index.html   整個網站（HTML + CSS + JS 都在同一檔，無外部相依，除了 Google Fonts）
+index.html   整個網站（HTML + CSS + JS 同一檔；外部只有 Google Fonts 與 Apple 封面／試聽）
+img/*.webp   藍色貼紙裝飾（來源：IG貼文素材，已裁邊壓縮）
 README.md    repo 說明
 .nojekyll    讓 GitHub Pages 直接提供檔案
 HANDOFF.md   本文件
@@ -34,18 +35,17 @@ curl "https://itunes.apple.com/lookup?id=<專輯ID>&entity=song&country=tw"
 ## 程式架構（index.html 內的 `<script>`）
 
 ### 歌曲資料 `SONGS`
-每筆：`{ t: 歌名, a: 專輯, y: 年份, alb: Apple 專輯 ID, i: Apple 曲目 ID, art: 封面網址（{s} 換尺寸）, pv: 試聽網址 }`，載入後自動加上 `id`（陣列索引）。全部 105 首都已寫死，不再即時配對。
+每筆：`{ t: 歌名, a: 專輯, y: 年份, alb: Apple 專輯 ID, i: Apple 曲目 ID, art: 封面網址（{s} 換尺寸）, pv: 試聽網址, tt?: 1＝主打歌 }`，載入後自動加上 `id`（陣列索引）。全部 105 首都已寫死，不再即時配對。
 
-### 排序：互動式合併排序（bottom-up）
-- 狀態 `S = { queue, L, R, M, done, hist, final }`
-  - `queue`：待合併的已排序組；一開始是每首歌各自一組（洗牌過）
-  - `L`、`R`：正在合併的兩組；每場比 `L[0]` vs `R[0]`
-  - `M`：本次合併已排好的部分
-  - `final`：完成後的完整排名（索引 0 = 第 1 名）
-- 105 首最多 608 場，模擬實測約 587 場。
-- `remainingMax()` 計算剩餘最多場數（進度條用）。
-- `hist` 保留最近 40 步供「上一步」。
-- 進度存在 `localStorage`，key：`cravity-rank-all-v1`。**改動 `SONGS` 內容或順序時要換 key**，否則舊進度的 id 會對錯歌。
+### 排序：淘汰賽樹，只取前 30 名
+- 狀態 `S = { K, order, res, est }`：`order` 是洗牌後的對戰表，`res` 是每場結果 `[a, b, 勝者]`，`est` 是預估總場數。
+- `solve(S)` 每次從頭用 `res` 重算：打一輪淘汰賽得到第 1 名，拿掉後重算，冠軍路徑以外的場次沿用舊結果；遇到沒比過的組合就回傳 `{need:[a,b]}`，排滿 K 名回傳 `{final}`。
+- 105 首約 266 場（全排序約 587 場）；上一步＝`res.pop()`。
+- 進度與篩選存在 `localStorage`，key：`cravity-rank-v2`。**改動 `SONGS` 順序時要換 key**。
+- 主打歌（`tt`）：各專輯／單曲主打，含 Cheese（SUN SEEKER 先行曲）；〈Boogie Woogie〉與 OST〈Ready Set Go〉目前算收錄曲。
+
+### 4:3 結果圖
+`exportImage()` 用 canvas 畫 2000×1500 PNG：左側粉藍區塊放第 1–3 名，右側 3×9 放第 4–30 名。封面從 mzstatic 以 `crossOrigin="anonymous"` 載入（有 CORS），字型先用 `document.fonts.load` 載好。
 
 ### Apple Music 試聽
 - 直接用 `pv` 播放；播放失敗時（試聽網址失效）用 JSONP 呼叫 `itunes.apple.com/lookup?id=<i>` 重取一次。
@@ -54,8 +54,8 @@ curl "https://itunes.apple.com/lookup?id=<專輯ID>&entity=song&country=tw"
 ### 其他
 - 鍵盤 ← → 可選歌。
 - 支援淺色／深色主題（CSS 變數，`prefers-color-scheme` 與 `data-theme`）。
-- 對決時兩首歌永遠橫向並排（封面在上，資訊與試聽在下）；點封面也能選。
-- 視覺：米白紙感底、Noto Serif TC＋Cormorant Garamond＋IBM Plex Mono。
+- 對決時兩首歌永遠橫向並排，只顯示專輯資訊；「選這首」靠卡片底部對齊。點封面也能選。
+- 視覺參考 Figma「Alliatus – Mastermind Landing Page」，黃色改藍色：淺灰底、白卡、粉藍色塊、Playfair Display＋Noto Serif TC 標題、黑色膠囊按鈕、星芒。
 
 ## 收錄範圍（105 首）
 

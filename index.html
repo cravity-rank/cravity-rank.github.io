@@ -154,7 +154,8 @@ dialog::backdrop{background:rgba(10,14,20,.55)}
 @media (max-width:720px){
   body{font-size:14px}
   .nav{padding-left:16px}
-  .hero{min-height:0;padding-bottom:150px}
+  .hero{min-height:0}
+  .hero.intro{padding-bottom:170px}
   .result-hero{grid-template-columns:1fr}
   .crown{max-width:240px}
   .year{grid-template-columns:1fr;gap:6px}
@@ -407,7 +408,7 @@ function renderSetup(){
   const years=[...new Set(ALBUMS.map(x=>x.y))];
   $("stage").innerHTML=`
   <div style="display:flex;flex-direction:column;gap:18px">
-    <section class="hero">
+    <section class="hero intro">
       <span class="pill" style="align-self:flex-start;position:relative;z-index:2">CRAVITY · ${SONGS.length} songs</span>
       <h1><em class="k">Find</em> 你的本命曲<br>前 <em class="k">30</em> 名</h1>
       <p>選好範圍，兩首二選一，排出你心中的 CRAVITY 前 30 名。</p>
@@ -545,7 +546,7 @@ async function exportImage(){
   const PX=90, PY=200, PW=820, PH=1210;
   x.fillStyle=BLUE; rrect(x,PX,PY,PW,PH,44); x.fill();
   drawDeco(x,decos[0],PX+PW-40,PY+90,110,16);
-  drawDeco(x,decos[1],PX+70,PY+PH-60,170,-12);
+  drawDeco(x,decos[1],PX+50,PY+PH-24,130,-12);
   drawStar(x,PX+80,PY+80,30,4,.22,"#ffffff");
   const c1=560, cx1=PX+(PW-c1)/2, cy1=PY+70;
   x.save(); x.shadowColor="rgba(20,40,80,.35)"; x.shadowBlur=50; x.shadowOffsetY=24; x.fillStyle="#fff"; rrect(x,cx1,cy1,c1,c1,28); x.fill(); x.restore();
@@ -576,7 +577,7 @@ async function exportImage(){
     x.fillStyle=INK; x.font=`700 23px ${SERIF}`; x.fillText(fit(x,s.t,tw),tx,Y+72);
     x.fillStyle=MUTED; x.font=`500 17px ${SANS}`; x.fillText(fit(x,s.a,tw),tx,Y+98);
   });
-  drawDeco(x,decos[2],W-150,H-60,170,-8);
+  drawDeco(x,decos[2],W-140,H-38,130,-8);
   x.fillStyle=MUTED; x.font=`500 22px ${SANS}`; x.fillText("",90,H-40);
   // 輸出
   const url=cv.toDataURL("image/png");
