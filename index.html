@@ -3,135 +3,166 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="CRAVITY 全曲二選一排名遊戲，選出你的本命曲九宮格">
+<meta name="description" content="CRAVITY 二選一排名遊戲，選出你的前 30 名本命曲">
 <title>CRAVITY 本命曲對決</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://is1-ssl.mzstatic.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Noto+Serif+TC:wght@400;600;700&family=Noto+Serif+KR:wght@600&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600;1,700;1,800&family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Serif+KR:wght@600&display=swap">
 <style>
-/* 紙感版面：米白紙底、墨色細線、封面為主角 */
+/* 版面參考 Alliatus：淺灰底、白卡細框、粉藍色塊、襯線標題配粗斜體強調、黑色膠囊按鈕、星芒點綴 */
 :root{
-  --paper:#f3efe6; --card:#faf7f1; --ink:#2a2622; --muted:#857b6e; --line:#d8cfc0;
-  --accent:#9a4a2e; --accent-ink:#faf7f1; --shadow:rgba(70,50,30,.16); --grain:.05;
-  --f-serif:"Noto Serif TC","Noto Serif KR","Songti TC","PMingLiU",serif;
-  --f-latin:"Cormorant Garamond","Noto Serif TC","Noto Serif KR",serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --bg:#efefed; --surface:#ffffff; --ink:#151515; --muted:#6c6c6c; --line:#e1e1dd;
+  --blue:#c6dbf3; --blue-soft:#e7f0fa; --blue-deep:#2a64aa; --btn:#151515; --btn-ink:#ffffff; --shadow:rgba(20,30,50,.10);
+  --f-display:"Playfair Display","Noto Serif TC","Noto Serif KR",serif;
+  --f-head:"Noto Serif TC","Noto Serif KR","Playfair Display",serif;
+  --f-body:"Inter","Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;
+  --r-lg:28px; --r-md:20px; --r-sm:14px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#1b1916; --card:#23201c; --ink:#ebe4d7; --muted:#a09584; --line:#39342d;
-  --accent:#d88a62; --accent-ink:#1b1916; --shadow:rgba(0,0,0,.45); --grain:.035; color-scheme:dark}}
+  --bg:#111316; --surface:#1a1d21; --ink:#f0f0ee; --muted:#9a9fa6; --line:#2b2f35;
+  --blue:#223650; --blue-soft:#1b2736; --blue-deep:#8cb7ea; --btn:#f0f0ee; --btn-ink:#111316; --shadow:rgba(0,0,0,.4); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#1b1916; --card:#23201c; --ink:#ebe4d7; --muted:#a09584; --line:#39342d;
-  --accent:#d88a62; --accent-ink:#1b1916; --shadow:rgba(0,0,0,.45); --grain:.035; color-scheme:dark}
+  --bg:#111316; --surface:#1a1d21; --ink:#f0f0ee; --muted:#9a9fa6; --line:#2b2f35;
+  --blue:#223650; --blue-soft:#1b2736; --blue-deep:#8cb7ea; --btn:#f0f0ee; --btn-ink:#111316; --shadow:rgba(0,0,0,.4); color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{min-height:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-serif);font-size:15px;line-height:1.7;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;
-  -webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:var(--grain);z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px;overflow-x:hidden}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 img{display:block;max-width:100%}
 a{color:inherit}
+button{font:inherit;color:inherit}
+em.k{font-family:var(--f-display);font-style:italic;font-weight:800;letter-spacing:-.01em}
 
-/* 刊頭 */
-.mast{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;border-bottom:1px solid var(--ink);padding-bottom:14px}
-.eyebrow{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
-h1{font-family:var(--f-serif);font-weight:700;font-size:clamp(30px,6vw,46px);line-height:1.1;margin:0;letter-spacing:.04em}
-h1 em{font-family:var(--f-latin);font-style:italic;font-weight:500;color:var(--accent);letter-spacing:0;margin-left:.15em}
-.status{font-family:var(--f-latin);font-style:italic;font-size:17px;color:var(--muted);display:flex;gap:14px;font-variant-numeric:oldstyle-nums}
-.status b{font-style:normal;font-weight:600;color:var(--ink)}
-.meter{height:1px;background:var(--line);margin-top:-25px}
-.meter i{display:block;height:1px;background:var(--accent);width:0;transition:width .4s ease}
+/* 頂列 */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 20px}
+.logo{font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:-.01em;text-decoration:none}
+.logo i{font-weight:800;color:var(--blue-deep)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:11px 20px;font-size:14.5px;font-weight:600;cursor:pointer;border:1px solid var(--btn);background:var(--btn);color:var(--btn-ink);transition:transform .15s,opacity .15s;text-decoration:none;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.sm{padding:7px 14px;font-size:13px}
+.btn:disabled{opacity:.35;cursor:default;transform:none}
+.btn:focus-visible,.chip:focus-visible,.cover:focus-visible,.prev:focus-visible,.tile:focus-visible,.row-play:focus-visible,.tog:focus-visible{outline:2px solid var(--blue-deep);outline-offset:3px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
 
-/* 對決：兩張封面橫向並排 */
-.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(10px,3vw,28px);align-items:start}
-.or{align-self:stretch;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted);font-family:var(--f-latin);font-style:italic;font-size:20px}
-.or::before,.or::after{content:"";width:1px;background:var(--line);flex:1}
-.or::before{flex:0 0 22%}
-.song{margin:0;display:flex;flex-direction:column;gap:14px;min-width:0;transition:opacity .25s ease,transform .25s ease}
-.cover{display:block;width:100%;padding:0;border:0;background:var(--line);cursor:pointer;aspect-ratio:1/1;position:relative;
-  box-shadow:0 1px 0 var(--line),0 14px 30px -12px var(--shadow);transition:transform .25s ease,box-shadow .25s ease}
-.cover img{width:100%;height:100%;object-fit:cover}
-.cover:hover{transform:translateY(-3px);box-shadow:0 1px 0 var(--line),0 22px 40px -14px var(--shadow)}
-.cover:focus-visible,.pick:focus-visible,.prev:focus-visible,.tile:focus-visible,.text-btn:focus-visible,.am:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
-.song figcaption{display:flex;flex-direction:column;gap:8px;min-width:0}
-.title{font-family:var(--f-serif);font-weight:600;font-size:clamp(17px,3.6vw,28px);line-height:1.3;margin:0;overflow-wrap:anywhere;text-wrap:balance}
-.meta{margin:0;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 10px;line-height:1.5}
-.meta .yr{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em}
-.media{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin-top:2px}
-.prev{position:relative;display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;color:var(--ink);background:none;border:0;padding:4px 0 6px;cursor:pointer;border-bottom:1px solid var(--line)}
-.prev .ic{display:inline-flex;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;align-items:center;justify-content:center}
-.prev svg{width:10px;height:10px;fill:currentColor}
-.prev .bar{position:absolute;left:0;bottom:-1px;height:1px;width:0;background:var(--accent)}
-.prev:hover,.prev.on{color:var(--accent)}
-.ic svg + svg,.pl svg + svg,.on .ic svg:first-child,.on .pl svg:first-child,.prev .lb .onl,.prev.on .lb .off{display:none}
-.on .ic svg + svg,.on .pl svg + svg,.prev.on .lb .onl{display:inline}
-.am{font-family:var(--f-latin);font-style:italic;font-size:15px;color:var(--muted);text-decoration:none;white-space:nowrap}
-.am:hover{color:var(--accent)}
-.pick{margin-top:6px;font:inherit;font-size:15px;letter-spacing:.2em;padding:11px 10px;background:transparent;color:var(--ink);border:1px solid var(--ink);cursor:pointer;transition:background .2s,color .2s}
-.pick:hover{background:var(--ink);color:var(--paper)}
-.pick kbd{font-family:var(--f-mono);font-size:11px;letter-spacing:0;opacity:.6;margin-left:4px}
-.song.picked .cover{transform:translateY(-6px) rotate(-.6deg);box-shadow:0 1px 0 var(--line),0 26px 44px -14px var(--shadow)}
-.song.picked .pick{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.song.lost{opacity:.35;transform:scale(.98)}
+/* 粉藍主視覺區塊 */
+.hero{position:relative;background:var(--blue);border-radius:var(--r-lg);padding:clamp(26px,5vw,52px);overflow:hidden;min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.hero h1,.hero h2{font-family:var(--f-head);font-weight:700;font-size:clamp(30px,5.6vw,54px);line-height:1.15;margin:0;max-width:13em;position:relative;z-index:2}
+.hero p{margin:0;max-width:30em;color:var(--ink);opacity:.78;position:relative;z-index:2}
+.hero .actions{display:flex;flex-wrap:wrap;gap:10px;position:relative;z-index:2}
+.deco{position:absolute;pointer-events:none;user-select:none;z-index:1;filter:drop-shadow(0 10px 18px rgba(30,60,100,.18))}
+.spark{position:absolute;pointer-events:none;z-index:1;color:var(--ink)}
+.spark.o{color:var(--surface)}
 
-/* 工具列與說明 */
-.tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
-.note{font-size:13px;color:var(--muted);margin:0;max-width:60ch}
-.text-btn{font:inherit;font-size:13.5px;background:none;border:0;color:var(--ink);padding:2px 0;cursor:pointer;border-bottom:1px solid var(--line)}
-.text-btn:hover{color:var(--accent);border-color:var(--accent)}
-.text-btn:disabled{opacity:.35;cursor:default;border-color:transparent}
-.rail{display:flex;flex-direction:column;gap:10px}
-.rail h2,.result .label,.result h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
-.chips{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13.5px;margin:0;padding:0;list-style:none}
-.chip .k{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-right:5px}
-.chip.now{color:var(--accent);font-weight:600}
-.chip.out{color:var(--muted)}
+/* 白卡 */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:clamp(18px,3.4vw,30px)}
+.sec-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:16px}
+.sec-h h2{font-family:var(--f-head);font-weight:700;font-size:clamp(22px,3.4vw,30px);margin:0;line-height:1.2}
+.sec-h .tools{display:flex;gap:8px;flex-wrap:wrap}
 
-/* 結果：封面九宮格 */
-.result{display:flex;flex-direction:column;gap:22px}
-.crown{display:flex;flex-direction:column;gap:6px;text-align:center;padding:6px 0 4px}
-.crown .title{font-size:clamp(30px,7vw,54px);letter-spacing:.02em}
-.crown .meta{justify-content:center;font-size:13px}
-.nine{list-style:none;margin:0 auto;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,2.4vw,22px) clamp(6px,2vw,18px);width:100%;max-width:720px}
+/* 設定：專輯與類型 */
+.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tog{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:14px;font-weight:500}
+.tog::before{content:"";width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted)}
+.tog[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue-deep)}
+.tog[aria-pressed="true"]::before{border-color:var(--blue-deep);background:var(--blue-deep);box-shadow:inset 0 0 0 2.5px var(--blue-soft)}
+.years{display:flex;flex-direction:column;gap:14px}
+.year{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start}
+.year > span{font-family:var(--f-display);font-style:italic;font-weight:700;font-size:18px;color:var(--blue-deep);padding-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:9px;padding:4px 14px 4px 4px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13.5px;text-align:left;max-width:100%}
+.chip img{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none}
+.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip small{color:var(--muted);font-size:12px}
+.chip[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue-deep)}
+.chip[aria-pressed="false"]{opacity:.55}
+.chip[aria-pressed="false"] img{filter:grayscale(1)}
+.startbar{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--btn);color:var(--btn-ink);border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 14px 30px -12px var(--shadow)}
+.startbar b{font-family:var(--f-display);font-size:20px}
+.startbar .btn{background:var(--btn-ink);color:var(--btn);border-color:var(--btn-ink)}
+
+/* 對決 */
+.top{display:flex;align-items:center;gap:12px}
+.meter{flex:1;height:6px;border-radius:6px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--blue-deep);width:0;transition:width .35s ease}
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(8px,2vw,18px);align-items:stretch;position:relative}
+.song{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:clamp(10px,1.8vw,16px);display:flex;flex-direction:column;gap:12px;min-width:0;transition:transform .2s ease,opacity .2s ease,border-color .2s}
+.cover{display:block;width:100%;padding:0;border:0;background:var(--blue-soft);cursor:pointer;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.cover:hover img{transform:scale(1.03)}
+.info{display:flex;flex-direction:column;gap:4px;min-width:0;padding:0 2px}
+.title{font-family:var(--f-head);font-weight:700;font-size:clamp(17px,3.2vw,26px);line-height:1.25;margin:0;overflow-wrap:anywhere}
+.meta{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.song .foot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.prev{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:var(--blue-soft);cursor:pointer;font-size:13.5px;font-weight:500}
+.prev svg{width:12px;height:12px;fill:currentColor}
+.prev .bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--blue-deep)}
+.prev.on{border-color:var(--blue-deep);color:var(--blue-deep)}
+.pick{width:100%}
+.song.picked{border-color:var(--blue-deep);transform:translateY(-4px)}
+.song.lost{opacity:.4}
+.vs{display:flex;align-items:center;justify-content:center;position:relative;width:clamp(30px,6vw,64px)}
+.vs svg{position:absolute;width:clamp(44px,8vw,78px);height:auto;color:var(--ink);top:28%}
+.vs b{position:absolute;top:28%;width:clamp(44px,8vw,78px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-style:italic;font-weight:800;font-size:clamp(12px,2vw,18px);color:var(--bg)}
+.ic-pause,.on .ic-play{display:none}
+.on .ic-pause{display:inline}
+
+/* 結果 */
+.result-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);align-items:center;gap:24px}
+.crown{position:relative;z-index:2;width:100%;max-width:300px;justify-self:center}
+.crown .tile{border-radius:var(--r-md);box-shadow:0 20px 40px -18px rgba(20,40,80,.45)}
+.crown .rk{font-size:22px}
+.no1{font-family:var(--f-head);font-weight:700;font-size:clamp(24px,4vw,40px);line-height:1.2;margin:0}
+.nine{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,2.4vw,20px)}
 .nine li{display:flex;flex-direction:column;gap:8px;min-width:0}
-.tile{position:relative;display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;background:var(--line);cursor:pointer;overflow:hidden;
-  box-shadow:0 10px 24px -14px var(--shadow)}
-.tile img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
-.tile:hover img{transform:scale(1.04)}
-.tile .rk{position:absolute;left:0;top:0;background:var(--paper);color:var(--ink);font-family:var(--f-latin);font-weight:600;font-size:clamp(14px,3vw,20px);line-height:1;padding:6px 9px 7px 7px;font-variant-numeric:lining-nums}
-.nine li:first-child .rk{background:var(--accent);color:var(--accent-ink)}
-.tile .pl{position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;background:rgba(250,247,241,.9);color:#2a2622;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.tile{position:relative;display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;border-radius:var(--r-sm);overflow:hidden;background:var(--blue-soft);cursor:pointer}
+.tile img{width:100%;height:100%;object-fit:cover}
+.tile .rk{position:absolute;left:8px;top:8px;min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--surface);color:var(--ink);font-family:var(--f-display);font-style:italic;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.nine li:nth-child(-n+3) .rk{background:var(--blue-deep);color:#fff}
+.tile .pl{position:absolute;right:8px;bottom:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);color:#151515;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .tile .pl svg{width:11px;height:11px;fill:currentColor}
 .tile:hover .pl,.tile.on .pl,.tile:focus-visible .pl{opacity:1}
-.tile .bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--accent)}
-.cap{margin:0;display:flex;flex-direction:column;line-height:1.35;min-width:0}
-.cap a{font-weight:600;font-size:clamp(12px,2.6vw,15px);text-decoration:none;overflow-wrap:anywhere}
-.cap a:hover{color:var(--accent)}
-.cap span{font-size:clamp(10.5px,2.2vw,12px);color:var(--muted);overflow-wrap:anywhere}
-.rest{font-size:14px;border-top:1px solid var(--line);padding-top:14px}
-.rest summary{cursor:pointer;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:var(--muted)}
-.rest ol{columns:2 240px;column-gap:28px;margin:14px 0 0;padding-left:2.6em}
-.rest li{break-inside:avoid;padding:2px 0}
-.rest li::marker{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
-.rest a{text-decoration:none}
-.rest a:hover{color:var(--accent)}
-.rest .yr{font-size:12px;color:var(--muted)}
+.tile .bar{position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--blue-deep)}
+.cap{margin:0;line-height:1.35;min-width:0}
+.cap a{display:block;font-weight:600;font-size:clamp(12.5px,2.4vw,15px);text-decoration:none;overflow-wrap:anywhere}
+.cap a:hover{color:var(--blue-deep)}
+.cap span{display:block;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.rows li{display:grid;grid-template-columns:34px 48px minmax(0,1fr);gap:12px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-sm)}
+.rows .n{font-family:var(--f-display);font-style:italic;font-weight:800;font-size:17px;color:var(--blue-deep);text-align:center}
+.row-play{position:relative;width:48px;height:48px;padding:0;border:0;border-radius:10px;overflow:hidden;cursor:pointer;background:var(--blue-soft)}
+.row-play img{width:100%;height:100%;object-fit:cover}
+.row-play .pl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff;opacity:0;transition:opacity .2s}
+.row-play .pl svg{width:12px;height:12px;fill:currentColor}
+.row-play:hover .pl,.row-play.on .pl{opacity:1}
+.row-play .bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--blue)}
+.rows .cap a{font-size:14px}
+
+/* 結果圖預覽 */
+dialog{border:0;border-radius:var(--r-md);padding:0;background:var(--surface);color:var(--ink);max-width:min(92vw,900px);width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(10,14,20,.55)}
+.dlg{display:flex;flex-direction:column;gap:14px;padding:16px}
+.dlg img{width:100%;border-radius:var(--r-sm);border:1px solid var(--line)}
+.dlg .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.dlg .hint{margin-right:auto;font-size:12.5px;color:var(--muted)}
 
 @media (max-width:720px){
-  body{font-size:14px;padding-block:20px 40px}
-  .wrap{gap:20px}
-  .meter{margin-top:-19px}
-  .pick{letter-spacing:.08em;font-size:14px;padding:10px 6px}
-  .pick kbd{display:none}
-  .prev .lb{font-size:12.5px}
-  .am{font-size:13.5px}
-  .or{font-size:15px}
+  body{font-size:14px}
+  .nav{padding-left:16px}
+  .hero{min-height:0;padding-bottom:150px}
+  .result-hero{grid-template-columns:1fr}
+  .crown{max-width:240px}
+  .year{grid-template-columns:1fr;gap:6px}
+  .year > span{padding-top:0;font-size:16px}
   .song{gap:10px}
-  .cap span{display:none}
+  .prev{padding:8px 10px;font-size:12.5px}
+  .pick{padding:10px 8px;font-size:13.5px}
+  .startbar{border-radius:var(--r-md);padding:12px 12px 12px 18px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -139,51 +170,43 @@ h1 em{font-family:var(--f-latin);font-style:italic;font-weight:500;color:var(--a
 <body>
 
 <div class="wrap">
-  <header class="mast">
-    <div>
-      <span class="eyebrow">CRAVITY · 全曲 <span id="count"></span> 首 · 二選一</span>
-      <h1>本命曲對決<em>duel</em></h1>
-    </div>
-    <div class="status" id="status"></div>
-  </header>
-  <div class="meter" aria-hidden="true"><i id="meter"></i></div>
-
+  <nav class="nav">
+    <a class="logo" href="./">CRAVITY <i>Rank</i></a>
+    <div class="nav-r" id="navR"></div>
+  </nav>
   <main id="stage"></main>
+</div>
 
-  <div class="tools" id="tools">
-    <p class="note" id="note"></p>
-    <div style="display:flex;gap:18px">
-      <button class="text-btn" id="undo" type="button">上一步</button>
-      <button class="text-btn" id="restart" type="button">重新洗牌</button>
+<dialog id="dlg">
+  <div class="dlg">
+    <img id="shot" alt="你的 CRAVITY 前 30 名結果圖">
+    <div class="row">
+      <span class="hint">手機可長按圖片儲存</span>
+      <button class="btn ghost sm" type="button" id="dlgClose">關閉</button>
+      <a class="btn sm" id="dlgSave" download="cravity-top30.png">下載圖片</a>
     </div>
   </div>
-
-  <section class="rail" id="rail">
-    <h2 id="railTitle">這一組目前的順序</h2>
-    <ol class="chips" id="chips"></ol>
-    <p class="note">每首歌都會被拿來和其他歌比較好幾次，不會因為一次輸掉就出局。你的每個選擇都會用來排出完整名次。進度會自動存在這個瀏覽器，可以分好幾次玩完。收錄 CRAVITY 全員演唱的所有韓文、日文原創曲；同一首歌的日文版、伴奏版，以及個人或跨團合作曲不重複收錄。</p>
-  </section>
-</div>
+</dialog>
 
 <script>
 const SF = "tw"; // Apple Music 店面
-// 每筆：t 歌名、a 專輯、y 年份、alb/i 原版專輯與曲目的 Apple Music ID、art 封面網址（{s} 換成尺寸）、pv 30 秒試聽網址
+// 每筆：t 歌名、a 專輯、y 年份、alb/i 原版專輯與曲目的 Apple Music ID、art 封面網址（{s} 換成尺寸）、pv 30 秒試聽網址、tt 主打歌
 const SONGS = [
 {"t":"Top of the Chain","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139918","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/49/0d/12/490d12f6-0feb-1dfa-f1f8-fb9811a4e7cb/mzaf_11429314043316013823.plus.aac.p.m4a"},
-{"t":"Break all the Rules","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139919","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5b/35/eb/5b35eb66-19f3-8de7-888f-73a50b2272da/mzaf_1663775338196414833.plus.aac.p.m4a"},
+{"t":"Break all the Rules","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139919","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5b/35/eb/5b35eb66-19f3-8de7-888f-73a50b2272da/mzaf_1663775338196414833.plus.aac.p.m4a","tt":1},
 {"t":"JUMPER","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139920","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ce/a1/a1/cea1a121-7a6d-d9f9-61ed-b9ec50ce6d90/mzaf_10853410706071241818.plus.aac.p.m4a"},
 {"t":"Blackout","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139921","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/81/e8/b6/81e8b68f-facb-da59-0ece-826b1f9390cf/mzaf_5047528221203620961.plus.aac.p.m4a"},
 {"t":"낯섦 (Stay)","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139922","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/88/98/ed/8898edf7-2ea2-9d1a-2c23-01cd03ff2913/mzaf_4303471198223096941.plus.aac.p.m4a"},
 {"t":"Cloud 9","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139923","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/8f/a8/858fa8f3-f47c-9d94-0a9a-3b33e2f3d803/mzaf_14851463208693110127.plus.aac.p.m4a"},
 {"t":"별 (Star)","a":"HIDEOUT : REMEMBER WHO WE ARE - SEASON1.","y":2020,"alb":"1507139916","i":"1507139924","art":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/33/43/1a/33431a8a-2996-7218-489f-19c22fc75745/CRVT_OnlineCover_FIN_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0a/01/dc/0a01dc19-daaf-094b-550a-96a118ebea05/mzaf_4580881456310926463.plus.aac.p.m4a"},
-{"t":"Flame","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295588","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/11/be/1511be7c-5616-4882-3a0b-2eee4011eb22/mzaf_13604230359757794348.plus.aac.p.m4a"},
+{"t":"Flame","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295588","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/11/be/1511be7c-5616-4882-3a0b-2eee4011eb22/mzaf_13604230359757794348.plus.aac.p.m4a","tt":1},
 {"t":"Believer","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295589","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2a/19/e9/2a19e9b3-2174-be01-0ffe-a84ee140c79f/mzaf_12933332075042682980.plus.aac.p.m4a"},
 {"t":"Ohh Ahh","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295590","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e7/da/24/e7da2410-3007-7b25-ec2a-07c89aa89fba/mzaf_14139213010576332485.plus.aac.p.m4a"},
 {"t":"Realize","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295591","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c8/1b/50/c81b5081-bd37-f6b5-ca21-98317236d51d/mzaf_13723390825748957003.plus.aac.p.m4a"},
 {"t":"열기구 (HOT AIR BALLOON)","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295592","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d8/dd/47/d8dd47ba-98cf-dcdb-e13a-da5f0a4a222a/mzaf_9772900955639467579.plus.aac.p.m4a"},
 {"t":"Sunrise","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295593","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/85/14/37/85143724-8d66-d0b7-bac6-42c68d849d3c/mzaf_16315196573694996185.plus.aac.p.m4a"},
 {"t":"호흡 (Breathing)","a":"HIDEOUT : THE NEW DAY WE STEP INTO - SEASON2.","y":2020,"alb":"1528295587","i":"1528295594","art":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ae/9c/51/ae9c5180-9e67-651d-68d0-8de15faa4cde/CRVT_season2_online-cover_3000px.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c4/60/c3/c460c344-ec26-b7fb-2ec4-05464cb7ba3c/mzaf_11463282513268322182.plus.aac.p.m4a"},
-{"t":"My Turn","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181185","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/70/d4/bb/70d4bb50-a158-ded6-e5fc-29b36a17ce84/mzaf_3221358273224467023.plus.aac.p.m4a"},
+{"t":"My Turn","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181185","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/70/d4/bb/70d4bb50-a158-ded6-e5fc-29b36a17ce84/mzaf_3221358273224467023.plus.aac.p.m4a","tt":1},
 {"t":"Call my name","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181186","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b9/82/4d/b9824d9a-287e-80a3-a4b2-41748f77adf2/mzaf_16430537532749827008.plus.aac.p.m4a"},
 {"t":"Mammoth","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181187","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/46/ac/41/46ac418e-858b-40cf-a8bd-2a4fcf9e34e3/mzaf_4586864547104547531.plus.aac.p.m4a"},
 {"t":"Bad Habits","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181188","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b2/36/b7/b236b750-3272-3139-e5c9-ff8f8dada57a/mzaf_3787109883987338325.plus.aac.p.m4a"},
@@ -191,14 +214,14 @@ const SONGS = [
 {"t":"Dangerous","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181190","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8a/fc/17/8afc171f-3cb0-8965-2194-ee8df5c5061e/mzaf_4021988430218940838.plus.aac.p.m4a"},
 {"t":"Give me your love","a":"HIDEOUT : BE OUR VOICE - SEASON3.","y":2021,"alb":"1549181184","i":"1549181191","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/0a/2b/610a2bf4-9885-a598-1bcb-65cf7c163c91/1.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a9/58/92/a958927a-24e7-e6f3-a179-933ffbdfeec6/mzaf_13653667555349924301.plus.aac.p.m4a"},
 {"t":"Intro : New Horizon","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071164","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/87/7b/29/877b2924-d793-2368-616e-c801fe846964/mzaf_16691277259491834875.plus.aac.p.m4a"},
-{"t":"Gas Pedal","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071165","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/68/1e/59/681e59a7-208b-4a67-d82d-88e9686fd6b5/mzaf_16642584816637326115.plus.aac.p.m4a"},
+{"t":"Gas Pedal","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071165","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/68/1e/59/681e59a7-208b-4a67-d82d-88e9686fd6b5/mzaf_16642584816637326115.plus.aac.p.m4a","tt":1},
 {"t":"VENI VIDI VICI","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071316","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/13/a5/b9/13a5b9e5-0aec-54d5-8be7-72fd30bb6f3c/mzaf_18109709579752013761.plus.aac.p.m4a"},
 {"t":"CHINGA-LINGA","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071317","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/92/f2/6a/92f26a1e-078d-82f6-9593-16807952913a/mzaf_6645154164509177604.plus.aac.p.m4a"},
 {"t":"Celebrate","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071318","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3e/19/42/3e194281-192c-7c38-e16a-abfe9b3d743e/mzaf_10270758034071230539.plus.aac.p.m4a"},
 {"t":"Grand Prix","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071319","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/ef/fa/85effa68-ff2f-9bfd-54c1-46f9eb79fb69/mzaf_5059872452189609070.plus.aac.p.m4a"},
 {"t":"Divin'","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071320","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a9/c2/ca/a9c2caf7-4adf-892e-ef2a-a5c9c2dfce04/mzaf_17051694654818674507.plus.aac.p.m4a"},
 {"t":"GO GO","a":"The Awakening : Written In the Stars","y":2021,"alb":"1581071163","i":"1581071321","art":"https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bf/94/bc/bf94bce8-a7cf-d60d-689e-7a555965d086/cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d5/26/2e/d5262e9c-16d4-2119-368c-caaa09fd96fc/mzaf_5585336739024739017.plus.aac.p.m4a"},
-{"t":"Adrenaline","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620131","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/60/08/fc/6008fcd2-0080-afcf-0c15-305f2a511814/mzaf_8350275884657278141.plus.aac.p.m4a"},
+{"t":"Adrenaline","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620131","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/60/08/fc/6008fcd2-0080-afcf-0c15-305f2a511814/mzaf_8350275884657278141.plus.aac.p.m4a","tt":1},
 {"t":"POW!","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620132","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0b/1c/58/0b1c5851-8b37-a7f9-e0b4-72547dbbb990/mzaf_7162150668743984657.plus.aac.p.m4a"},
 {"t":"BOPPIN'","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620133","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/68/15/e1/6815e1d7-940e-f576-8e17-3e676b2b77e2/mzaf_7398173757791867189.plus.aac.p.m4a"},
 {"t":"Chandelier","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620134","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b7/0f/8a/b70f8aef-afdd-13d9-acd8-06d2bf1a810c/mzaf_7333319288536217193.plus.aac.p.m4a"},
@@ -206,14 +229,14 @@ const SONGS = [
 {"t":"좋아하나봐 (Maybe Baby)","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620316","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/11/54/22/11542296-76e6-782e-3169-fd13b43cb14c/mzaf_15911519342102630896.plus.aac.p.m4a"},
 {"t":"Late Night","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620317","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/93/a8/78/93a878e4-ac87-978c-52ea-cc39b948b11c/mzaf_6984808515905952070.plus.aac.p.m4a"},
 {"t":"Outro : In Our Cosmos","a":"LIBERTY : IN OUR COSMOS","y":2022,"alb":"1614620124","i":"1614620318","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9d/6e/ce/9d6ece24-365e-ca90-0f68-6dfb74c11339/8804775225406.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/56/63/89/5663896c-042e-77af-6d10-640481f3379c/mzaf_7184576435363354436.plus.aac.p.m4a"},
-{"t":"VIVID","a":"VIVID（單曲）","y":2022,"alb":"1705660005","i":"1705660246","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/8f/86/d7/8f86d781-2ac0-5c10-1330-47f1b616919c/888272122800.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b1/5c/1b/b15c1b0e-db67-222a-0bd7-a12a2e93ad94/mzaf_1704459315645518784.plus.aac.p.m4a"},
+{"t":"VIVID","a":"VIVID（單曲）","y":2022,"alb":"1705660005","i":"1705660246","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/8f/86/d7/8f86d781-2ac0-5c10-1330-47f1b616919c/888272122800.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b1/5c/1b/b15c1b0e-db67-222a-0bd7-a12a2e93ad94/mzaf_1704459315645518784.plus.aac.p.m4a","tt":1},
 {"t":"Boogie Woogie","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380006","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/53/50/24/53502461-e3cc-b490-6bc5-a94b1c0ec345/mzaf_9782913612128442674.plus.aac.p.m4a"},
-{"t":"PARTY ROCK","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380009","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/80/7e/76807ed7-c87d-6609-74a7-d4ac1c9c4906/mzaf_14024427763573646168.plus.aac.p.m4a"},
+{"t":"PARTY ROCK","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380009","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/80/7e/76807ed7-c87d-6609-74a7-d4ac1c9c4906/mzaf_14024427763573646168.plus.aac.p.m4a","tt":1},
 {"t":"New Addiction","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380014","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/af/fc/c7/affcc768-96b3-3128-96bc-6f1ffc31e56f/mzaf_16118793342126581915.plus.aac.p.m4a"},
 {"t":"AUTOMATIC","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380799","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2f/36/97/2f3697a9-07c4-af88-83d6-bcd3ba052d8a/mzaf_8387911713337830559.plus.aac.p.m4a"},
 {"t":"Colorful","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380808","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4f/17/95/4f179545-faa1-7384-fd49-4106365c28de/mzaf_18107892614645370342.plus.aac.p.m4a"},
 {"t":"Knock Knock","a":"NEW WAVE","y":2022,"alb":"1645380005","i":"1645380814","art":"https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/48/9d/c9/489dc948-812b-5a03-a45d-923084b7da94/197186976714.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/07/5e/3b/075e3bac-bb45-acd3-376e-1e4ea7170856/mzaf_3509269824404301832.plus.aac.p.m4a"},
-{"t":"Groovy","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672974653","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ff/2e/32/ff2e3244-7208-c0d1-b73d-3377a12247fa/mzaf_8621310334928579721.plus.aac.p.m4a"},
+{"t":"Groovy","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672974653","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ff/2e/32/ff2e3244-7208-c0d1-b73d-3377a12247fa/mzaf_8621310334928579721.plus.aac.p.m4a","tt":1},
 {"t":"FLY","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672974658","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/81/c5/5a/81c55a3a-af0f-df59-6306-dfb648c63d2d/mzaf_359473658779090821.plus.aac.p.m4a"},
 {"t":"Get Lifted","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672974662","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/74/e9/af/74e9af4e-7603-70e2-014e-cb9f25271d3b/mzaf_4261735851769057323.plus.aac.p.m4a"},
 {"t":"Baddie","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672975264","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cd/32/51/cd3251a2-c80d-2ae2-3dc6-20c15c771489/mzaf_5934270807507645555.plus.aac.p.m4a"},
@@ -221,31 +244,31 @@ const SONGS = [
 {"t":"Light the way","a":"MASTER : PIECE","y":2023,"alb":"1672974648","i":"1672975431","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/04/2e/da/042edaea-b1a6-cd92-5b9b-b0ba1ae6db42/197188111380.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2f/cf/1f/2fcf1f2a-9c94-691f-0557-61e6948a8418/mzaf_9183308971807565274.plus.aac.p.m4a"},
 {"t":"I Can't Fight The Feeling","a":"Groovy -Japanese ver.-（日本單曲）","y":2023,"alb":"1692909978","i":"1692909981","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/4c/53/62/4c536223-4ba0-a325-74d6-28ca67c4e387/VICL-37694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/75/ce/9e/75ce9e59-2b44-2ec3-c1b2-f82e02f94dfb/mzaf_18195647583498799200.plus.aac.p.m4a"},
 {"t":"Ready Set Go","a":"驅魔麵館 2 OST","y":2023,"alb":"1700413087","i":"1700413285","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/09/7c/ff/097cffc1-7c59-1e06-80ab-61b7a8032d70/888272120882_Cover.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/88/52/7d/88527d6b-6d9e-827b-6b50-f2113f277236/mzaf_11381505348788158052.plus.aac.p.m4a"},
-{"t":"Cheese","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709669","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/32/8d/35/328d35db-3c22-fa48-0244-b78884c46944/mzaf_1193292703742186003.plus.aac.p.m4a"},
-{"t":"Ready or Not","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709673","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/51/d9/63/51d963bf-27cc-9264-03ac-f47ff864c8f7/mzaf_12205614555212627099.plus.aac.p.m4a"},
+{"t":"Cheese","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709669","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/32/8d/35/328d35db-3c22-fa48-0244-b78884c46944/mzaf_1193292703742186003.plus.aac.p.m4a","tt":1},
+{"t":"Ready or Not","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709673","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/51/d9/63/51d963bf-27cc-9264-03ac-f47ff864c8f7/mzaf_12205614555212627099.plus.aac.p.m4a","tt":1},
 {"t":"MEGAPHONE","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709677","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ef/70/e7/ef70e75f-74ee-4933-6b4e-977f285cbf08/mzaf_16557738879058131536.plus.aac.p.m4a"},
 {"t":"Vibration","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709682","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0c/14/c1/0c14c19f-14d9-7de2-31b0-5caf02dfc132/mzaf_17956853710541701794.plus.aac.p.m4a"},
 {"t":"9 o'clock","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709691","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/75/06/da750632-56e9-7a1f-1dd4-478082a6add4/mzaf_246738734300332301.plus.aac.p.m4a"},
 {"t":"LOVE FIRE","a":"SUN SEEKER","y":2023,"alb":"1704709485","i":"1704709694","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e0/aa/9f/e0aa9fb0-2ab9-3cfe-1250-e0871096e657/197189660689.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5a/a7/ab/5aa7abbc-d0b0-1132-8831-d66b17f50266/mzaf_2615042412462048228.plus.aac.p.m4a"},
-{"t":"Dilly Dally","a":"Dilly Dally（日本 EP）","y":2023,"alb":"1717365942","i":"1717365943","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ff/04/2e/ff042ed2-5699-8a14-738c-ad8f1c4a3b25/VICL-65914.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/4a/3d/cb4a3dcb-318b-8e1d-5075-ed5633d2dda9/mzaf_10358229446861346902.plus.aac.p.m4a"},
+{"t":"Dilly Dally","a":"Dilly Dally（日本 EP）","y":2023,"alb":"1717365942","i":"1717365943","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ff/04/2e/ff042ed2-5699-8a14-738c-ad8f1c4a3b25/VICL-65914.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/4a/3d/cb4a3dcb-318b-8e1d-5075-ed5633d2dda9/mzaf_10358229446861346902.plus.aac.p.m4a","tt":1},
 {"t":"Christmastide","a":"Dilly Dally（日本 EP）","y":2023,"alb":"1717365942","i":"1717366157","art":"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ff/04/2e/ff042ed2-5699-8a14-738c-ad8f1c4a3b25/VICL-65914.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f6/7c/f1/f67cf103-12a3-2859-6e3a-261f8819c4f2/mzaf_4620870612586960521.plus.aac.p.m4a"},
 {"t":"C'est La Vie","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850386","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c1/e6/da/c1e6da88-e24c-80c6-111e-2fca73c6cc8d/mzaf_8852438421827968667.plus.aac.p.m4a"},
-{"t":"Love or Die","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850392","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/23/a4/97/23a4971c-7923-6219-0e4a-5a0fa17faf49/mzaf_7107501498819867468.plus.aac.p.m4a"},
+{"t":"Love or Die","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850392","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/23/a4/97/23a4971c-7923-6219-0e4a-5a0fa17faf49/mzaf_7107501498819867468.plus.aac.p.m4a","tt":1},
 {"t":"Cherry Blossom","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850401","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b0/6f/d7/b06fd7a7-49c1-291b-0e8c-5751e190cc27/mzaf_12121653445303832290.plus.aac.p.m4a"},
 {"t":"Mr.","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850558","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1f/e0/0a/1fe00a6a-0ad6-34a4-8731-163d7ce4d97b/mzaf_10988825700345252009.plus.aac.p.m4a"},
 {"t":"Worst Thriller","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850561","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/86/dd/df/86dddff2-190b-588c-7cdb-65be28d48545/mzaf_14621914880749921932.plus.aac.p.m4a"},
 {"t":"Over & Over","a":"EVERSHINE","y":2024,"alb":"1730850381","i":"1730850569","art":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/da/1c/91/da1c91f2-e5ac-6ca0-42be-2710cd438607/197190871418.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/60/8d/da608dba-839a-6751-d522-64570c7ba584/mzaf_1753062208955992085.plus.aac.p.m4a"},
-{"t":"SHOW OFF","a":"SHOW OFF（日本單曲）","y":2024,"alb":"1746880964","i":"1746880966","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/70/41/fa/7041fa59-50f8-3248-9b27-e6d7e16d50dd/VICL-37739.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0d/50/0c/0d500c1a-b5e1-3769-cc98-92766a3ca51e/mzaf_6127161018736014804.plus.aac.p.m4a"},
+{"t":"SHOW OFF","a":"SHOW OFF（日本單曲）","y":2024,"alb":"1746880964","i":"1746880966","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/70/41/fa/7041fa59-50f8-3248-9b27-e6d7e16d50dd/VICL-37739.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0d/50/0c/0d500c1a-b5e1-3769-cc98-92766a3ca51e/mzaf_6127161018736014804.plus.aac.p.m4a","tt":1},
 {"t":"Blue & White","a":"SHOW OFF（日本單曲）","y":2024,"alb":"1746880964","i":"1746881061","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/70/41/fa/7041fa59-50f8-3248-9b27-e6d7e16d50dd/VICL-37739.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8f/ba/bb/8fbabb1b-6924-3858-0b04-22b1f1853ebd/mzaf_11203826684553729216.plus.aac.p.m4a"},
-{"t":"Now or Never","a":"FIND THE ORBIT","y":2024,"alb":"1780370472","i":"1780370476","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/40/58/63/40586396-9a34-557e-8eae-f6bdd30cabb8/198846822464.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/87/8e/c9/878ec937-eb9e-d614-8a60-3af145e30b24/mzaf_16403802337236570970.plus.aac.p.m4a"},
+{"t":"Now or Never","a":"FIND THE ORBIT","y":2024,"alb":"1780370472","i":"1780370476","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/40/58/63/40586396-9a34-557e-8eae-f6bdd30cabb8/198846822464.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/87/8e/c9/878ec937-eb9e-d614-8a60-3af145e30b24/mzaf_16403802337236570970.plus.aac.p.m4a","tt":1},
 {"t":"Secret","a":"FIND THE ORBIT","y":2024,"alb":"1780370472","i":"1780370781","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/40/58/63/40586396-9a34-557e-8eae-f6bdd30cabb8/198846822464.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/71/6e/eb/716eebea-37f6-8649-3f88-05253941cfdf/mzaf_11240845364588373065.plus.aac.p.m4a"},
 {"t":"Horizon","a":"FIND THE ORBIT","y":2024,"alb":"1780370472","i":"1780370783","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/40/58/63/40586396-9a34-557e-8eae-f6bdd30cabb8/198846822464.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e0/95/64/e095648d-226c-0156-c7e1-02d1ebdeb413/mzaf_14426582747485012715.plus.aac.p.m4a"},
-{"t":"Jelly Bean","a":"Jelly Bean（日本 EP）","y":2025,"alb":"1800651583","i":"1800651584","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/80/19/65801902-0ca9-0b37-8818-14c0b8e0227b/VICL-66055.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0f/b5/da/0fb5dadc-cfdf-27f1-92a1-215ef34264f3/mzaf_5345427574232352425.plus.aac.p.m4a"},
+{"t":"Jelly Bean","a":"Jelly Bean（日本 EP）","y":2025,"alb":"1800651583","i":"1800651584","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/80/19/65801902-0ca9-0b37-8818-14c0b8e0227b/VICL-66055.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0f/b5/da/0fb5dadc-cfdf-27f1-92a1-215ef34264f3/mzaf_5345427574232352425.plus.aac.p.m4a","tt":1},
 {"t":"SCORCH","a":"Jelly Bean（日本 EP）","y":2025,"alb":"1800651583","i":"1800651586","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/80/19/65801902-0ca9-0b37-8818-14c0b8e0227b/VICL-66055.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/90/33/f3/9033f362-9cf6-a58c-7e4e-802c72ee2ca2/mzaf_349303019917388036.plus.aac.p.m4a"},
 {"t":"ENIGMA","a":"Jelly Bean（日本 EP）","y":2025,"alb":"1800651583","i":"1800651587","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/80/19/65801902-0ca9-0b37-8818-14c0b8e0227b/VICL-66055.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e4/04/16/e404164f-b964-fc64-f915-d6c12c462fac/mzaf_11094160831650250674.plus.aac.p.m4a"},
 {"t":"On My Way","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819754844","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3d/76/4d/3d764d86-850f-3239-6821-573a5ba7f978/mzaf_15521375469634410484.plus.aac.p.m4a"},
 {"t":"SWISH","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819754970","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5f/10/91/5f109182-a250-45b1-911e-d372ff06fd0a/mzaf_4430362143776069428.plus.aac.p.m4a"},
-{"t":"SET NET G0?!","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819754985","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/46/d0/40/46d0400e-250a-0b16-a2e9-93f70156e67a/mzaf_10788842919822404084.plus.aac.p.m4a"},
+{"t":"SET NET G0?!","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819754985","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/46/d0/40/46d0400e-250a-0b16-a2e9-93f70156e67a/mzaf_10788842919822404084.plus.aac.p.m4a","tt":1},
 {"t":"Rendez-vous","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755091","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5c/76/dc/5c76dc23-3547-8cdb-b1cc-cbbcddffb6c8/mzaf_957172665876490635.plus.aac.p.m4a"},
 {"t":"PARANOIA","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755104","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9e/e7/45/9ee74556-79c1-b6bf-0396-69e60cc5a542/mzaf_11367160925550781669.plus.aac.p.m4a"},
 {"t":"Straight Up To Heaven","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755113","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f8/14/18/f814184f-fbe8-ad35-d956-404104faab5f/mzaf_1789419017419048379.plus.aac.p.m4a"},
@@ -255,30 +278,33 @@ const SONGS = [
 {"t":"Click, Flash, Pow","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755508","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0e/30/18/0e301889-2eaf-5dc4-3e46-eee0ccbe8a00/mzaf_11753628892615803139.plus.aac.p.m4a"},
 {"t":"Love Me Again","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755517","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7a/c7/78/7ac77867-2cef-00c5-205d-d7e2a4e6ab99/mzaf_392875461342606825.plus.aac.p.m4a"},
 {"t":"Wish Upon A Star","a":"Dare to Crave","y":2025,"alb":"1819754827","i":"1819755527","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/c9/21/3d/c9213d5e-b7e7-d6ff-0634-1c1df071a61f/199350663895.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/24/6d/5d/246d5dc8-4218-50d7-9221-062808ff8ed5/mzaf_913862024855796356.plus.aac.p.m4a"},
-{"t":"Lemonade Fever","a":"Dare to Crave : Epilogue","y":2025,"alb":"1848076087","i":"1848076546","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b1/76/ee/b176eeb0-957d-ee14-b477-5d86201f64e5/199806126233.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/ec/91/04ec919b-a814-d846-67ba-a8c423531523/mzaf_11922490429018626779.plus.aac.p.m4a"},
+{"t":"Lemonade Fever","a":"Dare to Crave : Epilogue","y":2025,"alb":"1848076087","i":"1848076546","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b1/76/ee/b176eeb0-957d-ee14-b477-5d86201f64e5/199806126233.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/ec/91/04ec919b-a814-d846-67ba-a8c423531523/mzaf_11922490429018626779.plus.aac.p.m4a","tt":1},
 {"t":"OXYGEN","a":"Dare to Crave : Epilogue","y":2025,"alb":"1848076087","i":"1848076561","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b1/76/ee/b176eeb0-957d-ee14-b477-5d86201f64e5/199806126233.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f8/70/5a/f8705aea-38d9-eacb-a93a-1a5ce4129371/mzaf_13257291024324846350.plus.aac.p.m4a"},
 {"t":"Everyday","a":"Dare to Crave : Epilogue","y":2025,"alb":"1848076087","i":"1848076693","art":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b1/76/ee/b176eeb0-957d-ee14-b477-5d86201f64e5/199806126233.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/73/8c/15738c65-467f-dff9-daaa-0932f76e04f0/mzaf_10096680759764345365.plus.aac.p.m4a"},
-{"t":"BLAST OUT","a":"BLAST OUT（日本單曲）","y":2026,"alb":"1880606456","i":"1880606457","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/26/56/47/265647ac-93ed-ced6-1f98-0af6b6edecbf/VICL-37816.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4c/36/ad/4c36ad20-85b8-a44b-1e94-b70741d465cf/mzaf_12801813619006532407.plus.aac.p.m4a"},
+{"t":"BLAST OUT","a":"BLAST OUT（日本單曲）","y":2026,"alb":"1880606456","i":"1880606457","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/26/56/47/265647ac-93ed-ced6-1f98-0af6b6edecbf/VICL-37816.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4c/36/ad/4c36ad20-85b8-a44b-1e94-b70741d465cf/mzaf_12801813619006532407.plus.aac.p.m4a","tt":1},
 {"t":"恋じゃない? -Don't you love me?-","a":"BLAST OUT（日本單曲）","y":2026,"alb":"1880606456","i":"1880606458","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/26/56/47/265647ac-93ed-ced6-1f98-0af6b6edecbf/VICL-37816.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/06/52/82/06528229-1b9d-2cc3-d29f-cc3d9359e6a4/mzaf_15384775814495960143.plus.aac.p.m4a"},
 {"t":"Paradox","a":"BLAST OUT（日本單曲）","y":2026,"alb":"1880606456","i":"1880606462","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/26/56/47/265647ac-93ed-ced6-1f98-0af6b6edecbf/VICL-37816.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/42/7e/c7/427ec725-8bec-0ddb-4879-a99da224d329/mzaf_592061018019530302.plus.aac.p.m4a"},
 {"t":"Hello-Goodbye","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891555830","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d9/6d/5a/d96d5ac8-21d8-2e16-b178-6c92ef1e66f7/mzaf_29777730129567216.plus.aac.p.m4a"},
-{"t":"AWAKE","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891555988","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f3/cf/7c/f3cf7c2d-26a6-011e-88e8-679c5610f416/mzaf_13662395850966590416.plus.aac.p.m4a"},
+{"t":"AWAKE","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891555988","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f3/cf/7c/f3cf7c2d-26a6-011e-88e8-679c5610f416/mzaf_13662395850966590416.plus.aac.p.m4a","tt":1},
 {"t":"FEVER","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891555994","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/6e/e6/fc/6ee6fcfc-86a0-c8cf-1ff9-42930a72ed58/mzaf_10545779031793353215.plus.aac.p.m4a"},
 {"t":"Adore","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891555999","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d6/fd/d0/d6fdd035-3e5a-aa08-2f34-4a80456f34c4/mzaf_9254975694199677060.plus.aac.p.m4a"},
 {"t":"Love Me Like You Do","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891556004","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a4/08/76/a40876f3-2666-ce3a-c5c5-6f556a378ff5/mzaf_10686546507100397754.plus.aac.p.m4a"},
 {"t":"봄날의 우리 (Spring, with You)","a":"ReDeFINE","y":2026,"alb":"1891555826","i":"1891556008","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3d/a4/bd/3da4bdb3-48f6-99cb-e87d-fac9c157cc11/820233017909.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ce/0a/92/ce0a9266-63ae-57a9-41d3-24fa272e9e11/mzaf_17918870557952733566.plus.aac.p.m4a"},
 {"t":"Pulse","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885030","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5a/88/71/5a88714b-c382-1da7-0de4-7a4337f35d43/mzaf_13077085649663720381.plus.aac.p.m4a"},
-{"t":"LOUDER","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885037","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/de/90/ac/de90aca4-c551-ef23-ba8b-eb6ab87bf68e/mzaf_16631305417261941175.plus.aac.p.m4a"},
+{"t":"LOUDER","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885037","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/de/90/ac/de90aca4-c551-ef23-ba8b-eb6ab87bf68e/mzaf_16631305417261941175.plus.aac.p.m4a","tt":1},
 {"t":"Lucky Charm","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885257","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f1/95/d5/f195d5e9-eb54-2622-aaa8-dd9d1ea77033/mzaf_7848869205327274723.plus.aac.p.m4a"},
 {"t":"LOVE ME","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885261","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/66/91/c0/6691c00c-58e0-71d7-acac-f5679ad36a48/mzaf_14997334335958224547.plus.aac.p.m4a"},
 {"t":"Seize The Night","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885271","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c3/1b/21/c31b219f-07b7-8f83-b30a-e049e02089ba/mzaf_16638387718355492243.plus.aac.p.m4a"},
 {"t":"Fantasy","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885496","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/51/cc/38/51cc3883-7752-23f4-1443-9f7a52e8b8c5/mzaf_15539869087802577199.plus.aac.p.m4a"},
 {"t":"Odd One Out","a":"sonorous","y":2026,"alb":"6811885027","i":"6811885503","art":"https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9c/81/8b/9c818b96-2bfd-899f-83f4-c68657024d3b/885288509694.jpg/{s}x{s}bb.jpg","pv":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/73/d7/52/73d752be-81d1-1c24-959b-e0a3eb1d5bd2/mzaf_13661901485909866738.plus.aac.p.m4a"}
 ].map((s,k)=>({...s,id:k}));
-try{ localStorage.removeItem("cravity-am-map-v1"); }catch(e){} // 舊版的即時配對快取
+const ALBUMS = [...new Map(SONGS.map(s=>[s.a,{a:s.a,y:s.y,art:s.art}])).values()];
+try{ localStorage.removeItem("cravity-am-map-v1"); localStorage.removeItem("cravity-rank-all-v1"); }catch(e){} // 舊版資料
 
 const art = (s,n) => s.art.replace(/\{s\}/g, n);
 const amLink = s => `https://music.apple.com/${SF}/album/${s.alb}?i=${s.i}`;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function jsonp(url){
   return new Promise((res,rej)=>{
@@ -325,133 +351,263 @@ async function toggle(id){
     if(playingId===id){ playingId=null; sync(); }
   }
 }
-const PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>';
-const PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>';
-const prevBtn = s => `<button class="prev" type="button" data-play="${s.id}" aria-pressed="false" aria-label="試聽〈${esc(s.t)}〉"><span class="ic">${PLAY}${PAUSE}</span><span class="lb"><span class="off">試聽</span><span class="onl">暫停</span></span><i class="bar"></i></button>`;
-const amA = s => `<a class="am" href="${amLink(s)}" target="_blank" rel="noopener">Apple Music ↗</a>`;
+const PLAY='<svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>';
+const PAUSE='<svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>';
+const STAR=(n=8,inner=.42)=>{let p="";for(let k=0;k<n*2;k++){const r=k%2?inner*50:50,a=Math.PI*k/n-Math.PI/2;p+=(k?"L":"M")+(50+r*Math.cos(a)).toFixed(1)+" "+(50+r*Math.sin(a)).toFixed(1)}return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${p}Z" fill="currentColor"/></svg>`};
+const spark=(style,cls="",n=4,inner=.22)=>`<span class="spark ${cls}" style="${style}">${STAR(n,inner)}</span>`;
+const deco=(name,style)=>`<img class="deco" src="img/${name}.webp" alt="" style="${style}" decoding="async">`;
 
-// 排序方式：互動式合併排序。先把每首歌各自成一組，再兩兩合併；
-// 每次合併時，兩組最前面的歌對決，贏的排進新順序，輸的留著繼續和下一首比。
-// 所以每首歌都會比很多次，最後得到完整排名。
-const KEY = "cravity-rank-all-v1";
-const TOP = 9;
-let S;
+// 排序方式：淘汰賽樹，只取前 K 名。所有歌排進一張固定的對戰表，先打一輪淘汰賽選出第 1 名；
+// 把冠軍拿掉後，只有冠軍走過的那條路要重賽（約 log2 n 場），其他場次的結果沿用，
+// 就能依序選出第 2、3…K 名。狀態只記「洗牌後的對戰表」和「每場的結果」，上一步＝刪掉最後一場。
+const KEY = "cravity-rank-v2";
+const TOPK = 30;
+let S;          // 進行中的狀態 {K, order, res:[[a,b,勝者]], est}
+let SEL = {albums:ALBUMS.map(x=>x.a), tt:true, bs:true};  // 設定畫面的選擇
+let CUR = null; // solve(S) 的結果：{need:[a,b]} 或 {final:[...]}
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function advance(s){
-  if(s.L.length||s.R.length) return;
-  if(s.queue.length===1){ s.final=s.queue[0]; return; }
-  s.L=s.queue.shift(); s.R=s.queue.shift(); s.M=[];
+function poolOf(sel){ return SONGS.filter(s=>sel.albums.includes(s.a) && (s.tt?sel.tt:sel.bs)).map(s=>s.id); }
+const pairKey=(a,b)=>a<b?a+"|"+b:b+"|"+a;
+function solve(s){
+  const memo=new Map(s.res.map(([a,b,w])=>[pairKey(a,b),w]));
+  const out=new Set(), ranked=[]; let need=null;
+  function win(lo,hi){
+    if(hi-lo===1){ const id=s.order[lo]; return out.has(id)?null:id; }
+    const mid=(lo+hi)>>1, a=win(lo,mid); if(need) return null; const b=win(mid,hi); if(need) return null;
+    if(a==null) return b; if(b==null) return a;
+    const w=memo.get(pairKey(a,b)); if(w===undefined){ need=[a,b]; return null; } return w;
+  }
+  while(ranked.length<s.K){ const w=win(0,s.order.length); if(need) return {need,ranked}; if(w==null) break; ranked.push(w); out.add(w); }
+  return {final:ranked};
 }
-function fresh(){const s={queue:shuffle(SONGS.map(x=>x.id)).map(id=>[id]),L:[],R:[],M:[],done:0,hist:[],final:null};advance(s);return s}
-// 剩下最多還要比幾場（每次合併 a、b 兩組最多 a+b−1 場）
-function remainingMax(s){
-  if(s.final) return 0;
-  let cost=s.L.length+s.R.length-1;
-  const q=s.queue.map(r=>r.length).concat(s.M.length+s.L.length+s.R.length);
-  while(q.length>1){const a=q.shift(),b=q.shift();cost+=a+b-1;q.push(a+b)}
-  return cost;
+// 預估總場數：用隨機偏好模擬幾次取平均
+function estimate(n){
+  if(n<2) return 0;
+  let tot=0;
+  for(let t=0;t<3;t++){
+    const val=shuffle([...Array(n).keys()]), s={K:Math.min(TOPK,n),order:[...Array(n).keys()],res:[]}; let r;
+    while((r=solve(s)).need){ const [a,b]=r.need; s.res.push([a,b,val[a]<val[b]?a:b]); }
+    tot+=s.res.length;
+  }
+  return Math.round(tot/3);
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function load(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&Array.isArray(v.queue))return v}catch(e){}return null}
+const estCache=new Map();
+const estimateCached=n=>{ if(!estCache.has(n)) estCache.set(n,estimate(n)); return estCache.get(n); };
+function fresh(pool){ return {K:Math.min(TOPK,pool.length),order:shuffle(pool),res:[],est:estimateCached(pool.length)}; }
+function save(){try{localStorage.setItem(KEY,JSON.stringify({S,SEL}))}catch(e){}}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)); if(v&&v.SEL) SEL=v.SEL; if(v&&v.S&&Array.isArray(v.S.order)) return v.S;}catch(e){} return null}
 
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const coverImg = (s,eager) => `<img src="${art(s,600)}" srcset="${art(s,300)} 300w, ${art(s,600)} 600w, ${art(s,900)} 900w" sizes="(max-width:720px) 46vw, 420px" alt="${esc(s.a)} 封面" width="600" height="600" decoding="async"${eager?"":" loading=\"lazy\""}>`;
+const coverImg=(s,sizes,eager)=>`<img src="${art(s,600)}" srcset="${art(s,300)} 300w, ${art(s,600)} 600w, ${art(s,900)} 900w" sizes="${sizes}" alt="" width="600" height="600" decoding="async"${eager?"":' loading="lazy"'}>`;
 
+/* ---------- 設定畫面 ---------- */
+function renderSetup(){
+  stopAudio();
+  $("navR").innerHTML = S ? `<button class="btn sm" type="button" data-act="resume">繼續上次</button>` : "";
+  const years=[...new Set(ALBUMS.map(x=>x.y))];
+  $("stage").innerHTML=`
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <section class="hero">
+      <span class="pill" style="align-self:flex-start;position:relative;z-index:2">CRAVITY · ${SONGS.length} songs</span>
+      <h1><em class="k">Find</em> 你的本命曲<br>前 <em class="k">30</em> 名</h1>
+      <p>選好範圍，兩首二選一，排出你心中的 CRAVITY 前 30 名。</p>
+      ${deco("photo","right:clamp(110px,16vw,190px);top:50%;width:clamp(120px,22vw,230px);transform:translateY(-50%) rotate(-6deg)")}
+      ${deco("lightstick","right:clamp(10px,4vw,50px);top:14%;width:clamp(56px,8vw,96px);transform:rotate(14deg)")}
+      ${deco("cloud9","right:clamp(30px,9vw,110px);bottom:-14px;width:clamp(80px,12vw,140px);transform:rotate(-10deg)")}
+      ${spark("right:clamp(260px,40vw,450px);top:22px;width:34px","",8,.4)}
+      ${spark("right:30px;bottom:24px;width:22px","o",4,.22)}
+    </section>
+    <section class="card">
+      <div class="sec-h"><h2>選擇<em class="k"> Songs</em></h2></div>
+      <div class="types">
+        <button class="tog" type="button" data-type="tt" aria-pressed="${SEL.tt}">主打歌</button>
+        <button class="tog" type="button" data-type="bs" aria-pressed="${SEL.bs}">收錄曲</button>
+      </div>
+      <div class="sec-h" style="margin-bottom:12px"><h2 style="font-size:20px">專輯</h2>
+        <div class="tools"><button class="btn ghost sm" type="button" data-act="all">全選</button><button class="btn ghost sm" type="button" data-act="none">全不選</button></div>
+      </div>
+      <div class="years">${years.map(y=>`<div class="year"><span>${y}</span><div class="chips">${ALBUMS.filter(x=>x.y===y).map(x=>`<button class="chip" type="button" data-alb="${esc(x.a)}" aria-pressed="${SEL.albums.includes(x.a)}"><img src="${art(x,100)}" alt="" loading="lazy" width="32" height="32"><span>${esc(x.a)} <small>${SONGS.filter(s=>s.a===x.a).length}</small></span></button>`).join("")}</div></div>`).join("")}</div>
+    </section>
+    <div class="startbar"><span id="selInfo"></span><button class="btn" type="button" data-act="start" id="startBtn">開始對決 →</button></div>
+  </div>`;
+  updateSel();
+}
+function updateSel(){
+  const n=poolOf(SEL).length;
+  $("selInfo").innerHTML = n>=2 ? `已選 <b>${n}</b> 首 · 約 ${estimateCached(n)} 場` : `至少要選 2 首`;
+  $("startBtn").disabled = n<2;
+}
+
+/* ---------- 對決畫面 ---------- */
 function card(s, side){
-  return `<figure class="song" data-side="${side}">
-    <button class="cover" type="button" data-pick="${side}" aria-label="選〈${esc(s.t)}〉">${coverImg(s,true)}</button>
-    <figcaption>
+  return `<article class="song" data-side="${side}">
+    <button class="cover" type="button" data-pick="${side}" aria-label="選〈${esc(s.t)}〉">${coverImg(s,"(max-width:720px) 44vw, 440px",true)}</button>
+    <div class="info">
       <h3 class="title">${esc(s.t)}</h3>
-      <p class="meta"><span>${esc(s.a)}</span><span class="yr">${s.y}</span></p>
-      <div class="media">${prevBtn(s)}${amA(s)}</div>
-      <button class="pick" type="button" data-pick="${side}">選這首<kbd>${side==="L"?"←":"→"}</kbd></button>
-    </figcaption>
-  </figure>`;
+      <p class="meta">${esc(s.a)} · ${s.y}</p>
+    </div>
+    <div class="foot">
+      <button class="prev" type="button" data-play="${s.id}" aria-pressed="false" aria-label="試聽〈${esc(s.t)}〉">${PLAY}${PAUSE}<span>試聽</span><i class="bar"></i></button>
+      <button class="btn pick" type="button" data-pick="${side}">選這首</button>
+    </div>
+  </article>`;
+}
+function renderDuel(){
+  const done=S.res.length, rem=Math.max(1,S.est-done);
+  $("navR").innerHTML=`<button class="btn ghost sm" type="button" data-act="undo"${done?"":" disabled"}>上一步</button><button class="btn ghost sm" type="button" data-act="setup">重選範圍</button>`;
+  const [A,B]=CUR.need.map(id=>SONGS[id]);
+  $("stage").innerHTML=`<div style="display:flex;flex-direction:column;gap:14px">
+    <div class="top"><span class="pill">第 ${done+1} 場 · 約剩 ${rem}</span><div class="meter" aria-hidden="true"><i style="width:${done/(done+rem)*100}%"></i></div></div>
+    <div class="duel">${card(A,"L")}<div class="vs" aria-hidden="true">${STAR(10,.62)}<b>VS</b></div>${card(B,"R")}</div>
+  </div>`;
+  sync();
+}
+
+/* ---------- 結果畫面 ---------- */
+function renderResult(){
+  const f=CUR.final, c=SONGS[f[0]];
+  $("navR").innerHTML=`<button class="btn ghost sm" type="button" data-act="setup">重新開始</button>`;
+  const tile=(id,k,sizes,eager)=>{const s=SONGS[id];return `<button class="tile" type="button" data-play="${id}" aria-pressed="false" aria-label="第 ${k+1} 名〈${esc(s.t)}〉，試聽">${coverImg(s,sizes,eager)}<span class="rk">${k+1}</span><span class="pl">${PLAY}${PAUSE}</span><i class="bar"></i></button>`};
+  const cap=s=>`<p class="cap"><a href="${amLink(s)}" target="_blank" rel="noopener">${esc(s.t)}</a><span>${esc(s.a)} · ${s.y}</span></p>`;
+  const nine=f.slice(1,10), rest=f.slice(10);
+  $("stage").innerHTML=`<div style="display:flex;flex-direction:column;gap:18px">
+    <section class="hero">
+      <div class="result-hero">
+        <div style="display:flex;flex-direction:column;gap:14px;position:relative;z-index:2">
+          <span class="pill" style="align-self:flex-start">共比了 ${S.res.length} 場</span>
+          <h2>Your <em class="k">Top ${f.length}</em></h2>
+          <p class="no1">No.1 · ${esc(c.t)}</p>
+          <p style="margin:0;opacity:.7">${esc(c.a)} · ${c.y}</p>
+          <div class="actions"><button class="btn" type="button" data-act="export">輸出 4:3 結果圖</button><a class="btn ghost" href="${amLink(c)}" target="_blank" rel="noopener">Apple Music ↗</a></div>
+        </div>
+        <div class="crown">${tile(f[0],0,"(max-width:720px) 240px, 300px",true)}</div>
+      </div>
+      ${deco("tape","left:52%;bottom:-18px;width:clamp(90px,13vw,150px);transform:rotate(-12deg)")}
+      ${deco("lightstick","right:14px;top:-10px;width:clamp(44px,6vw,70px);transform:rotate(18deg)")}
+      ${spark("left:46%;top:26px;width:30px","",8,.4)}
+    </section>
+    ${nine.length?`<section class="card"><div class="sec-h"><h2>第 2–${nine.length+1} 名</h2></div><ol class="nine">${nine.map((id,k)=>`<li>${tile(id,k+1,"(max-width:720px) 30vw, 300px",k<3)}${cap(SONGS[id])}</li>`).join("")}</ol></section>`:""}
+    ${rest.length?`<section class="card"><div class="sec-h"><h2>第 11–${f.length} 名</h2></div><ol class="rows">${rest.map((id,k)=>{const s=SONGS[id];return `<li><span class="n">${k+11}</span><button class="row-play" type="button" data-play="${id}" aria-pressed="false" aria-label="試聽〈${esc(s.t)}〉"><img src="${art(s,100)}" alt="" loading="lazy" width="48" height="48"><span class="pl">${PLAY}${PAUSE}</span><i class="bar"></i></button>${cap(s)}</li>`}).join("")}</ol></section>`:""}
+  </div>`;
+  sync();
 }
 
 function render(){
-  const stage=$("stage");
-  $("undo").disabled=!S.hist.length;
-  const rem=remainingMax(S);
-  $("meter").style.width=(S.final?100:S.done/(S.done+rem)*100)+"%";
-  $("note").textContent = "點封面或「選這首」做決定；「試聽」直接在頁面播放 30 秒片段。鍵盤 ← → 也能選。";
-
-  if(S.final){ renderResult(); return; }
-  $("rail").hidden=false;
-
-  const groupSize=S.M.length+S.L.length+S.R.length;
-  $("status").innerHTML=`<span>第 <b>${S.done+1}</b> 場</span><span>剩下最多 ${rem} 場</span>`;
-
-  const A=SONGS[S.L[0]], B=SONGS[S.R[0]];
-  stage.innerHTML=`<div class="duel">${card(A,"L")}<div class="or" aria-hidden="true">or</div>${card(B,"R")}</div>`;
-  sync();
-
-  $("railTitle").textContent=`正在排序的 ${groupSize} 首`;
-  const chip=(id,cls,k)=>`<li class="chip ${cls}">${k?`<span class="k">${k}</span>`:""}${esc(SONGS[id].t)}</li>`;
-  $("chips").innerHTML =
-    S.M.map((id,k)=>chip(id,"",k+1)).join("") +
-    [S.L[0],S.R[0]].map(id=>chip(id,"now","")).join("") +
-    S.L.slice(1).concat(S.R.slice(1)).map(id=>chip(id,"out","")).join("");
-}
-
-function renderResult(){
-  $("rail").hidden=true;
-  $("status").innerHTML=`<span><b>完成</b></span><span>共比了 ${S.done} 場</span>`;
-  const c=SONGS[S.final[0]];
-  const top=S.final.slice(0,TOP), rest=S.final.slice(TOP);
-  $("stage").innerHTML=`<section class="result">
-    <div class="crown">
-      <span class="label">你的 CRAVITY 本命曲</span>
-      <h2 class="title">${esc(c.t)}</h2>
-      <p class="meta"><span>${esc(c.a)}</span><span class="yr">${c.y}</span></p>
-    </div>
-    <ol class="nine">${top.map((id,k)=>{const s=SONGS[id];return `<li>
-      <button class="tile" type="button" data-play="${id}" aria-pressed="false" aria-label="第 ${k+1} 名〈${esc(s.t)}〉，試聽">${coverImg(s,k<3).replace('sizes="(max-width:720px) 46vw, 420px"','sizes="(max-width:720px) 31vw, 240px"')}<span class="rk">${k+1}</span><span class="pl">${PLAY}${PAUSE}</span><i class="bar"></i></button>
-      <p class="cap"><a href="${amLink(s)}" target="_blank" rel="noopener">${esc(s.t)}</a><span>${esc(s.a)} · ${s.y}</span></p>
-    </li>`}).join("")}</ol>
-    ${rest.length?`<details class="rest"><summary>查看第 ${TOP+1}–${S.final.length} 名</summary><ol start="${TOP+1}">${rest.map(id=>`<li><a href="${amLink(SONGS[id])}" target="_blank" rel="noopener">${esc(SONGS[id].t)}</a> <span class="yr">· ${esc(SONGS[id].a)}</span></li>`).join("")}</ol></details>`:""}
-  </section>`;
-  sync();
+  if(!S){ renderSetup(); return; }
+  CUR=solve(S);
+  if(CUR.final) renderResult(); else renderDuel();
 }
 
 function pick(side){
-  if(S.final) return;
+  if(!S||!CUR||!CUR.need) return;
   stopAudio();
-  if(S.hist.length>=40) S.hist.shift();
-  S.hist.push(JSON.stringify({queue:S.queue,L:S.L,R:S.R,M:S.M,done:S.done,final:S.final}));
-  S.L=S.L.slice(); S.R=S.R.slice(); S.M=S.M.slice(); S.queue=S.queue.slice();
-  S.M.push(side==="L"?S.L.shift():S.R.shift());
-  S.done++;
-  if(!S.L.length||!S.R.length){
-    S.queue.push(S.M.concat(S.L,S.R));
-    S.L=[];S.R=[];S.M=[];
-    advance(S);
-  }
+  const [a,b]=CUR.need;
+  S.res.push([a,b,side==="L"?a:b]);
+  CUR=solve(S);
   // 先預載下一場的封面，換場時不會閃白
-  if(!S.final) for(const id of [S.L[0],S.R[0]]){ const im=new Image(); im.src=art(SONGS[id],600); }
+  if(CUR.need) for(const id of CUR.need){ const im=new Image(); im.src=art(SONGS[id],600); }
   const el=document.querySelector(`.song[data-side="${side}"]`);
   const other=document.querySelector(`.song:not([data-side="${side}"])`);
   if(el){el.classList.add("picked"); other&&other.classList.add("lost");
-    setTimeout(()=>{save();render();window.scrollTo({top:0,behavior:"smooth"})},matchMedia("(prefers-reduced-motion:reduce)").matches?0:300);
+    setTimeout(()=>{save();render();window.scrollTo({top:0,behavior:"smooth"})},matchMedia("(prefers-reduced-motion:reduce)").matches?0:240);
   } else {save();render()}
+}
+
+/* ---------- 4:3 結果圖 ---------- */
+function loadImg(src,cors){return new Promise(res=>{const im=new Image(); if(cors) im.crossOrigin="anonymous"; im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src;})}
+function rrect(x,c,y,w,h,r){x.beginPath();x.moveTo(c+r,y);x.arcTo(c+w,y,c+w,y+h,r);x.arcTo(c+w,y+h,c,y+h,r);x.arcTo(c,y+h,c,y,r);x.arcTo(c,y,c+w,y,r);x.closePath();}
+function fit(x,t,w){ if(x.measureText(t).width<=w) return t; while(t.length>1&&x.measureText(t+"…").width>w) t=t.slice(0,-1); return t+"…"; }
+function drawCover(x,im,X,Y,sz,r){ x.save(); rrect(x,X,Y,sz,sz,r); x.clip(); if(im) x.drawImage(im,X,Y,sz,sz); else {x.fillStyle="#e7f0fa";x.fillRect(X,Y,sz,sz);} x.restore(); }
+function drawStar(x,cx,cy,R,n,inner,color){ x.beginPath(); for(let k=0;k<n*2;k++){const r=k%2?R*inner:R,a=Math.PI*k/n-Math.PI/2; x[k?"lineTo":"moveTo"](cx+r*Math.cos(a),cy+r*Math.sin(a));} x.closePath(); x.fillStyle=color; x.fill(); }
+function drawDeco(x,im,cx,cy,w,rot){ if(!im) return; const h=w*im.height/im.width; x.save(); x.translate(cx,cy); x.rotate(rot*Math.PI/180); x.shadowColor="rgba(30,60,100,.22)"; x.shadowBlur=24; x.shadowOffsetY=10; x.drawImage(im,-w/2,-h/2,w,h); x.restore(); }
+async function exportImage(){
+  const btn=document.querySelector('[data-act="export"]'); if(btn){btn.disabled=true;btn.textContent="產生中…";}
+  const f=CUR.final, done=S.res.length, W=2000, H=1500;
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H; const x=cv.getContext("2d");
+  const allText=f.map(id=>SONGS[id].t+SONGS[id].a).join("")+"My CRAVITY Top 30 No.";
+  await Promise.all(['700 60px "Noto Serif TC"','600 30px "Noto Serif KR"','800 italic 60px "Playfair Display"','700 60px "Playfair Display"','600 24px "Inter"','500 24px "Noto Sans TC"','700 24px "Noto Sans TC"'].map(q=>document.fonts.load(q,allText).catch(()=>{})));
+  const [covers,decos]=await Promise.all([
+    Promise.all(f.map((id,k)=>loadImg(art(SONGS[id],k===0?900:k<3?600:200),true))),
+    Promise.all(["lightstick","cheese","tape","cloud9"].map(n=>loadImg(`img/${n}.webp`)))
+  ]);
+  const INK="#151515", MUTED="#6c6c6c", BLUE="#c6dbf3", DEEP="#2a64aa", SERIF='"Noto Serif TC","Noto Serif KR",serif', SANS='"Inter","Noto Sans TC",sans-serif', DISP='"Playfair Display",serif';
+  x.fillStyle="#efefed"; x.fillRect(0,0,W,H);
+  // 標題
+  x.fillStyle=INK; x.textBaseline="alphabetic";
+  x.font=`700 72px ${DISP}`; x.fillText("My CRAVITY",90,140);
+  const w1=x.measureText("My CRAVITY ").width;
+  x.fillStyle=DEEP; x.font=`italic 800 72px ${DISP}`; x.fillText(`Top ${f.length}`,90+w1,140);
+  x.fillStyle=MUTED; x.font=`500 24px ${SANS}`; x.textAlign="right";
+  const d=new Date(); x.fillText(`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}  ·  ${done} 場對決`,W-90,128);
+  x.textAlign="left";
+  drawStar(x,W-90-x.measureText(`${d.getFullYear()}.00.00  ·  ${done} 場對決`).width-70,118,26,8,.42,INK);
+  // 左側粉藍區塊：第 1–3 名
+  const PX=90, PY=200, PW=820, PH=1210;
+  x.fillStyle=BLUE; rrect(x,PX,PY,PW,PH,44); x.fill();
+  drawDeco(x,decos[0],PX+PW-40,PY+90,110,16);
+  drawDeco(x,decos[1],PX+70,PY+PH-60,170,-12);
+  drawStar(x,PX+80,PY+80,30,4,.22,"#ffffff");
+  const c1=560, cx1=PX+(PW-c1)/2, cy1=PY+70;
+  x.save(); x.shadowColor="rgba(20,40,80,.35)"; x.shadowBlur=50; x.shadowOffsetY=24; x.fillStyle="#fff"; rrect(x,cx1,cy1,c1,c1,28); x.fill(); x.restore();
+  drawCover(x,covers[0],cx1,cy1,c1,28);
+  x.fillStyle=DEEP; rrect(x,cx1+18,cy1+18,96,50,25); x.fill();
+  x.fillStyle="#fff"; x.font=`italic 800 30px ${DISP}`; x.textAlign="center"; x.fillText("No.1",cx1+66,cy1+53);
+  const s1=SONGS[f[0]];
+  x.fillStyle=INK; x.font=`700 54px ${SERIF}`; x.fillText(fit(x,s1.t,PW-80),PX+PW/2,cy1+c1+86);
+  x.fillStyle="rgba(21,21,21,.66)"; x.font=`500 24px ${SANS}`; x.fillText(fit(x,`${s1.a} · ${s1.y}`,PW-120),PX+PW/2,cy1+c1+128);
+  const c2=250, gap=40, y2=cy1+c1+180;
+  [1,2].forEach((k,j)=>{ if(!f[k]) return; const X=PX+(PW-(c2*2+gap))/2+j*(c2+gap), s=SONGS[f[k]];
+    drawCover(x,covers[k],X,y2,c2,22);
+    x.fillStyle="#fff"; rrect(x,X+12,y2+12,64,40,20); x.fill();
+    x.fillStyle=INK; x.font=`italic 800 24px ${DISP}`; x.fillText(`No.${k+1}`,X+44,y2+40);
+    x.fillStyle=INK; x.font=`700 28px ${SERIF}`; x.fillText(fit(x,s.t,c2+30),X+c2/2,y2+c2+44);
+    x.fillStyle="rgba(21,21,21,.6)"; x.font=`500 19px ${SANS}`; x.fillText(fit(x,s.a,c2+20),X+c2/2,y2+c2+74);
+  });
+  x.textAlign="left";
+  // 右側：第 4–30 名，3 欄 × 9 列
+  const RX=950, RY=200, RW=W-90-RX, cols=3, rows=9, gx=16, gy=14;
+  const cw=(RW-gx*(cols-1))/cols, ch=(PH-gy*(rows-1))/rows;
+  f.slice(3).forEach((id,j)=>{ const k=j+3, col=Math.floor(j/rows), row=j%rows; if(col>=cols) return;
+    const X=RX+col*(cw+gx), Y=RY+row*(ch+gy), s=SONGS[id];
+    x.fillStyle="#fff"; rrect(x,X,Y,cw,ch,20); x.fill(); x.strokeStyle="#e1e1dd"; x.lineWidth=2; x.stroke();
+    const cs=ch-28; drawCover(x,covers[k],X+14,Y+14,cs,12);
+    const tx=X+14+cs+16, tw=cw-(tx-X)-14;
+    x.fillStyle=DEEP; x.font=`italic 800 26px ${DISP}`; x.fillText(String(k+1),tx,Y+40);
+    x.fillStyle=INK; x.font=`700 23px ${SERIF}`; x.fillText(fit(x,s.t,tw),tx,Y+72);
+    x.fillStyle=MUTED; x.font=`500 17px ${SANS}`; x.fillText(fit(x,s.a,tw),tx,Y+98);
+  });
+  drawDeco(x,decos[2],W-150,H-60,170,-8);
+  x.fillStyle=MUTED; x.font=`500 22px ${SANS}`; x.fillText("",90,H-40);
+  // 輸出
+  const url=cv.toDataURL("image/png");
+  $("shot").src=url; $("dlgSave").href=url;
+  if(btn){btn.disabled=false;btn.textContent="輸出 4:3 結果圖";}
+  $("dlg").showModal();
 }
 
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-pick]"); if(b){ pick(b.dataset.pick); return; }
-  const pv=e.target.closest("[data-play]"); if(pv) toggle(+pv.dataset.play);
+  const pv=e.target.closest("[data-play]"); if(pv){ toggle(+pv.dataset.play); return; }
+  const ch=e.target.closest("[data-alb]");
+  if(ch){ const a=ch.dataset.alb, on=SEL.albums.includes(a); SEL.albums=on?SEL.albums.filter(v=>v!==a):SEL.albums.concat(a); ch.setAttribute("aria-pressed",!on); updateSel(); save(); return; }
+  const ty=e.target.closest("[data-type]");
+  if(ty){ const k=ty.dataset.type; SEL[k]=!SEL[k]; ty.setAttribute("aria-pressed",SEL[k]); updateSel(); save(); return; }
+  const act=e.target.closest("[data-act]")?.dataset.act;
+  if(act==="all"||act==="none"){ SEL.albums=act==="all"?ALBUMS.map(x=>x.a):[]; document.querySelectorAll("[data-alb]").forEach(c=>c.setAttribute("aria-pressed",act==="all")); updateSel(); save(); }
+  if(act==="start"){ const pool=poolOf(SEL); if(pool.length<2) return; S=fresh(pool); save(); render(); window.scrollTo({top:0}); }
+  if(act==="resume"){ render(); }
+  if(act==="setup"){ stopAudio(); renderSetup(); window.scrollTo({top:0}); }
+  if(act==="undo"){ stopAudio(); if(!S.res.length) return; S.res.pop(); save(); render(); }
+  if(act==="export"){ exportImage(); }
 });
+$("dlgClose").onclick=()=>$("dlg").close();
 document.addEventListener("keydown",e=>{
-  if(e.target.closest("input,textarea")) return;
+  if(!CUR||!CUR.need||!document.querySelector(".duel")) return;
   if(e.key==="ArrowLeft") pick("L");
   if(e.key==="ArrowRight") pick("R");
 });
-$("undo").onclick=()=>{ stopAudio(); if(!S.hist.length) return; const p=JSON.parse(S.hist.pop()); Object.assign(S,p); save(); render(); };
-$("restart").onclick=()=>{ stopAudio(); S=fresh(); save(); render(); };
 
-$("count").textContent=SONGS.length;
-S=load()||fresh();
+S=load();
 render();
 </script>
 </body>
